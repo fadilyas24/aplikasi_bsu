@@ -66,7 +66,7 @@ class SignInPage extends StatelessWidget {
                 CustomFilledButton(
                   title: 'Masuk',
                   onPressed: () {
-                    Navigator.pushNamed(context, '/home');
+                    Navigator.pushNamed(context, '/main-home');
                   },
                 ),
                 SizedBox(

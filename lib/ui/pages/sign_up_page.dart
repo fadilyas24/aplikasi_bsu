@@ -16,20 +16,22 @@ class SignUpPage extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: edge),
         children: [
           Container(
-            width: 161,
-            height: 105,
+            width: 151,
+            height: 75,
             margin: EdgeInsets.only(
-              top: 50,
-              bottom: 50,
+              top: 40,
+              bottom: 25,
             ),
             decoration: const BoxDecoration(
-              image: DecorationImage(image: AssetImage('assets/logo_bsu.png')),
+              image: DecorationImage(
+                image: AssetImage('assets/logo_bsu.png'),
+              ),
             ),
           ),
           Text(
             'Ayo Daftar &\nSetorkan Sampahmu',
             style: blackTextStyle.copyWith(
-                fontSize: 20, fontWeight: FontWeight.w700),
+                fontSize: 18, fontWeight: FontWeight.w700),
           ),
           SizedBox(
             height: 20,
@@ -68,19 +70,19 @@ class SignUpPage extends StatelessWidget {
                 SizedBox(
                   height: 16,
                 ),
-                //KONFIRMASI PASSWORD INPUT
-                // CustomFormField(
-                //   title: 'Konfirmasi Password',
-                //   formHintText: 'Konfirmasi password Anda',
-                //   obscureText: true,
-                // ),
+                // KONFIRMASI PASSWORD INPUT
+                CustomFormField(
+                  title: 'Konfirmasi Password',
+                  formHintText: 'Konfirmasi password Anda',
+                  obscureText: true,
+                ),
                 SizedBox(
                   height: 30,
                 ),
                 CustomFilledButton(
-                  title: 'Lanjut',
+                  title: 'Daftar',
                   onPressed: () {
-                    Navigator.pushNamed(context, '/sign-up-set-profile');
+                    Navigator.pushNamed(context, '/main-home');
                   },
                 ),
                 SizedBox(
