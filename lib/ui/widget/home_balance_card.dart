@@ -18,7 +18,7 @@ class BalanceCard extends StatelessWidget {
       width: 170,
       height: 75,
       margin: EdgeInsets.only(
-        top: 50,
+        top: 20,
       ),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(

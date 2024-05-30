@@ -5,12 +5,18 @@ class NotificationCard extends StatelessWidget {
   final String title;
   final String description;
   final String time;
-  const NotificationCard({
-    Key? key,
-    required this.title,
-    required this.description,
-    required this.time,
-  }) : super(key: key);
+  final Color? borderColor;
+  final double? borderWidth;
+  final Color? unseenNotification;
+  const NotificationCard(
+      {Key? key,
+      required this.title,
+      required this.description,
+      required this.time,
+      this.borderColor,
+      this.borderWidth,
+      this.unseenNotification})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +26,13 @@ class NotificationCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: whiteColor,
+        color: unseenNotification ?? whiteColor,
+        border: borderColor != null && borderWidth != null
+            ? Border.all(
+                color: borderColor!,
+                width: borderWidth!,
+              )
+            : null,
       ),
       padding: EdgeInsets.all(16),
       width: double.infinity,

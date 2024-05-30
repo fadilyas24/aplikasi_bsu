@@ -5,20 +5,20 @@ class CustomFilledButton extends StatelessWidget {
   final String title;
   final double width;
   final double height;
-  final VoidCallback? onPressed; 
+  final VoidCallback? onPressed;
   const CustomFilledButton({
     Key? key,
     required this.title,
-    this.width = double.infinity, 
-    this.height = 50,    
+    this.width = double.infinity,
+    this.height = 50,
     this.onPressed,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: 50,
+      width: width,
+      height: height,
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
@@ -30,6 +30,75 @@ class CustomFilledButton extends StatelessWidget {
         child: Text(
           title,
           style: whiteTextStyle,
+        ),
+      ),
+    );
+  }
+}
+
+class CustomTextButton extends StatelessWidget {
+  final String title;
+  final double width;
+  final double height;
+  final VoidCallback? onPressed;
+
+  const CustomTextButton({
+    Key? key,
+    required this.title,
+    this.width = double.infinity,
+    this.height = 19,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      width: width,
+      child: TextButton(
+        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+        onPressed: onPressed,
+        child: Text(
+          title,
+          style: blueTextStyle.copyWith(
+            fontSize: 14,
+            fontWeight: semiBold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomInputButton extends StatelessWidget {
+  final String title;
+  final VoidCallback? onTap;
+
+  const CustomInputButton({
+    Key? key,
+    required this.title,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: lightBlueColor,
+        ),
+        child: Center(
+          child: Text(
+            title,
+            style: blackTextStyle.copyWith(
+              fontSize: 24,
+              fontWeight: medium,
+            ),
+          ),
         ),
       ),
     );

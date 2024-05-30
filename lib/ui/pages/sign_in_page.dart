@@ -14,9 +14,9 @@ class SignInPage extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: edge),
         children: [
           Container(
-            width: 161,
-            height: 105,
-            margin: EdgeInsets.only(top: 50, bottom: 120),
+            width: 220,
+            height: 165,
+            margin: EdgeInsets.only(top: 80, bottom: 50),
             decoration: const BoxDecoration(
               image: DecorationImage(image: AssetImage('assets/logo_bsu.png')),
             ),

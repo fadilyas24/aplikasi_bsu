@@ -6,6 +6,7 @@ class ProfileItem extends StatelessWidget {
   final String iconUrl;
   final Color? color;
   final Color textColor;
+  final Color? iconColor;
   final VoidCallback? onTap;
   const ProfileItem({
     Key? key,
@@ -13,6 +14,7 @@ class ProfileItem extends StatelessWidget {
     required this.iconUrl,
     this.color = Colors.white,
     this.textColor = Colors.black,
+    required this.iconColor,
     this.onTap,
   }) : super(key: key);
 
@@ -37,11 +39,12 @@ class ProfileItem extends StatelessWidget {
               height: 35,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                image: DecorationImage(
-                  image: AssetImage(
-                    iconUrl,
-                  ),
+              ),
+              child: ImageIcon(
+                AssetImage(
+                  iconUrl,
                 ),
+                color: iconColor,
               ),
             ),
             SizedBox(

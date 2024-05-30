@@ -10,13 +10,9 @@ class NotificationPage extends StatelessWidget {
       backgroundColor: lightColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: lightColor,
         title: Text(
           'Notifikasi',
-          style: blackTextStyle.copyWith(fontSize: 20),
         ),
-        centerTitle: true,
       ),
       body: ListView(
         padding: EdgeInsets.symmetric(
@@ -30,18 +26,27 @@ class NotificationPage extends StatelessWidget {
                 description:
                     'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
                 time: 'Hari ini',
+                borderColor: blueColor,
+                unseenNotification: lightBlueColor,
+                borderWidth: 1,
               ),
               NotificationCard(
                 title: 'GRATIS Cashback',
                 description:
                     'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
                 time: '05 Mei 2024',
+                borderColor: blueColor,
+                unseenNotification: lightBlueColor,
+                borderWidth: 1,
               ),
               NotificationCard(
                 title: 'GRATIS Cashback',
                 description:
                     'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
                 time: '30 April 2024',
+                borderColor: blueColor,
+                unseenNotification: lightBlueColor,
+                borderWidth: 1,
               ),
               NotificationCard(
                 title: 'GRATIS Cashback',

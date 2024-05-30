@@ -12,13 +12,9 @@ class ProfilePage extends StatelessWidget {
       backgroundColor: lightColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: lightColor,
         title: Text(
           'Profil Saya',
-          style: blackTextStyle.copyWith(fontSize: 20),
         ),
-        centerTitle: true,
       ),
       body: ListView(
         padding: EdgeInsets.symmetric(
@@ -44,19 +40,40 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          const ProfileItem(
+          ProfileItem(
+            title: 'Edit Profil',
+            iconUrl: 'assets/i_profile_bold.png',
+            iconColor: blueColor,
+            onTap: () async {
+              if (await Navigator.pushNamed(context, '/pin') == true) {
+                Navigator.pushNamed(context, '/edit-profile');
+              }
+            },
+          ),
+          ProfileItem(
+            title: 'Pin Saya',
+            iconUrl: 'assets/i_pin.png',
+            iconColor: blueColor,
+          ),
+          ProfileItem(
             title: 'Ubah Bahasa',
             iconUrl: 'assets/i_language.png',
+            iconColor: blueColor,
           ),
-          const ProfileItem(
+          ProfileItem(
             title: 'Ubah Password',
             iconUrl: 'assets/i_password.png',
+            iconColor: blueColor,
           ),
-          const ProfileItem(
-              title: 'Pusat Bantuan', iconUrl: 'assets/i_help_center.png'),
+          ProfileItem(
+            title: 'Pusat Bantuan',
+            iconUrl: 'assets/i_help_center.png',
+            iconColor: blueColor,
+          ),
           ProfileItem(
             title: 'Logout',
             iconUrl: 'assets/i_logout.png',
+            iconColor: whiteColor,
             color: redColor,
             textColor: whiteColor,
             onTap: () {

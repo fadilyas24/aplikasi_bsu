@@ -1,4 +1,5 @@
 import 'package:aplikasi_bsu/shared/theme.dart';
+import 'package:aplikasi_bsu/ui/widget/buttons.dart';
 import 'package:aplikasi_bsu/ui/widget/home_balance_card.dart';
 import 'package:flutter/material.dart';
 import '../widget/home_activity.dart';
@@ -16,12 +17,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lightColor,
       body: ListView(
         padding: EdgeInsets.symmetric(
           horizontal: edge,
+          vertical: 20,
         ),
         children: [
+          buildCompleteProfile(),
           buildBalanceCard(),
           buildBannerCarousel(),
           buildServices(),
@@ -31,8 +33,66 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  bool isProfileCompleted = false;
+  Widget buildCompleteProfile() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Visibility(
+          visible: !isProfileCompleted,
+          child: Container(
+            margin: EdgeInsets.only(top: 20),
+            width: double.infinity,
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: lightBlueColor,
+              border: Border.all(width: 1, color: blueColor),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Selamat Datang!',
+                  style: blackTextStyle.copyWith(
+                    fontSize: 16,
+                    fontWeight: semiBold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Ayo, buat profil Anda lebih lengkap agar kami dapat memberikan layanan yang lebih baik untuk Anda',
+                  style: regularTextStyle.copyWith(
+                    fontSize: 12,
+                    fontWeight: regular,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomFilledButton(
+                  title: 'Lengkapi Sekarang',
+                  onPressed: () {
+                    setState(
+                      () {
+                        isProfileCompleted = true;
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget buildBalanceCard() {
-    return Row(
+    return const Row(
       children: [
         BalanceCard(
           title: 'Poin Kamu',
@@ -50,8 +110,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildBannerCarousel() {
-    return Padding(
-      padding: const EdgeInsets.only(
+    return const Padding(
+      padding: EdgeInsets.only(
         top: 20,
       ),
       child: BannerCarousel(),
@@ -93,11 +153,13 @@ class _HomePageState extends State<HomePage> {
                 HomeServiceItem(
                   iconUrl: 'assets/i_reward.png',
                   title: 'Tukar\nPoin',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/redeem-poin');
+                  },
                 ),
                 HomeServiceItem(
                   iconUrl: 'assets/i_other.png',
                   title: 'Lainnya\n',
-                  
                 ),
               ],
             ),
@@ -110,7 +172,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildActivity() {
     return Container(
       margin: EdgeInsets.only(
-        top: 30,
+        top: 20,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,11 +187,14 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Spacer(),
-              Text(
-                'Lihat semua',
-                style: greyTextStyle.copyWith(
-                  fontSize: 12,
-                  fontWeight: semiBold,
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/activity');
+                },
+                child: Text(
+                  'Lihat Semua',
+                  style:
+                      regularTextStyle.copyWith(fontSize: 12, color: greyColor),
                 ),
               ),
             ],

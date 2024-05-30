@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import '../../shared/theme.dart';
 
 class BannerCarousel extends StatefulWidget {
-  const BannerCarousel({super.key});
+  final VoidCallback? onTap;
+
+  const BannerCarousel({
+    Key? key,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   _BannerCarouselState createState() => _BannerCarouselState();
@@ -21,13 +26,15 @@ class _BannerCarouselState extends State<BannerCarousel> {
       children: [
         CarouselSlider(
           items: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: AssetImage('assets/img_banner.png'),
-                  fit: BoxFit.cover,
+            GestureDetector(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                    image: AssetImage('assets/img_banner.png'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
