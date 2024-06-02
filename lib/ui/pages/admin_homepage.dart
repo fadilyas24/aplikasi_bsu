@@ -1,13 +1,10 @@
-// import 'package:aplikasi_bsu/pages/admin_acc_rewards_page.dart';
-// import 'package:aplikasi_bsu/pages/manage_product_page.dart';
-// import 'package:aplikasi_bsu/pages/admin_manage_user_page.dart';
-// import 'package:aplikasi_bsu/pages/profile_page.dart';
-// import 'package:aplikasi_bsu/pages/admin_view_trash_data.dart';
 import 'package:aplikasi_bsu/shared/theme.dart';
+import 'package:aplikasi_bsu/ui/pages/admin_notification_page.dart';
+import 'package:aplikasi_bsu/ui/widget/admin_menu_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-// import 'admin_notification_page.dart';
+import '../widget/user_profile_card.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({Key? key});
@@ -23,7 +20,6 @@ class _MainAdminState extends State<MainAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
       bottomNavigationBar: Container(
         height: 80,
         child: BottomAppBar(
@@ -55,18 +51,11 @@ class _MainAdminState extends State<MainAdmin> {
                   label: 'Beranda',
                 ),
                 BottomNavigationBarItem(
-                  icon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentIndex = 1;
-                      });
-                    },
-                    child: Image.asset(
-                      'assets/i_notifikasi.png',
-                      width: 32,
-                      height: 32,
-                      color: _currentIndex == 1 ? blueColor : greyColor,
-                    ),
+                  icon: Image.asset(
+                    'assets/i_notification.png',
+                    width: 32,
+                    height: 32,
+                    color: _currentIndex == 1 ? blueColor : greyColor,
                   ),
                   label: 'Notifikasi',
                 ),
@@ -78,340 +67,71 @@ class _MainAdminState extends State<MainAdmin> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          AdminHomePage(context),
-          // AdminNotificationPage(),
+          adminHomePage(context),
+          AdminNotificationPage(),
         ],
       ),
     );
   }
-}
 
-Widget AdminHomePage(BuildContext context) {
-  return Scaffold(
-    backgroundColor: whiteColor,
-    body: ListView(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: edge),
-          child: Container(
-            margin: EdgeInsets.only(top: 35),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget adminHomePage(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: edge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(
+              top: 55,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: whiteColor,
+            ),
+            child: const Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Admin,',
-                      style: blackTextStyle.copyWith(
-                          fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 2,
-                    ),
-                    Text(
-                      'Doe',
-                      style: blueTextStyle.copyWith(
-                          fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 2,
-                    ),
-                  ],
-                ),
-                GestureDetector(
+                UserProfileCard(
+                    imgUrl: 'assets/img_profile.png',
+                    name: 'Jack Sparrow',
+                    email: 'Admin'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 20,
+              childAspectRatio: 0.75,
+              children: [
+                AdminMenuCard(
+                  title: 'Kelola Nasabah',
+                  iconUrl: 'assets/i_profile_bold.png',
                   onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => ProfilePage(),
-                    //   ),
-                    // );
+                    Navigator.pushNamed(context, '/admin-manage-user');
                   },
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: Offset(0, 0),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        'assets/i_profile.png',
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                  ),
+                ),
+                AdminMenuCard(
+                  title: 'Penukaran Poin',
+                  iconUrl: 'assets/i_coin.png',
+                  onTap: () {},
+                ),
+                AdminMenuCard(
+                  title: 'Lihat Data Sampah',
+                  iconUrl: 'assets/i_trashbag.png',
+                  onTap: () {},
+                ),
+                AdminMenuCard(
+                  title: 'Kelola Stok Produk',
+                  iconUrl: 'assets/i_product.png',
+                  onTap: () {},
                 ),
               ],
             ),
           ),
-        ),
-        SizedBox(
-          height: 30,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: edge),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => ManageUsers(),
-                      //   ),
-                      // );
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 170,
-                          height: 208,
-                          margin: EdgeInsets.only(top: 20),
-                          padding: EdgeInsets.symmetric(vertical: 35),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            color: Color(0xFFD63C3C),
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child: Container(
-                                  width: 70,
-                                  height: 70,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFFFF5E5E),
-                                  ),
-                                  child: Center(
-                                    child: Image(
-                                      width: 23.41,
-                                      height: 32.11,
-                                      fit: BoxFit.contain,
-                                      image: AssetImage(
-                                          'assets/i_profile_white.png'),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 15),
-                                child: Text(
-                                  'Kelola Data User',
-                                  style: whiteTextStyle.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => AccRewards(),
-                      //   ),
-                      // );
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 170,
-                          height: 208,
-                          margin: EdgeInsets.only(top: 20),
-                          padding: EdgeInsets.symmetric(vertical: 35),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            color: Color(0xFFC51A76),
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child: Container(
-                                  width: 70,
-                                  height: 70,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFFFF5CB4),
-                                  ),
-                                  child: Center(
-                                    child: Image(
-                                      width: 44,
-                                      height: 44,
-                                      fit: BoxFit.contain,
-                                      image: AssetImage(
-                                          'assets/i_blue_points.png'),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 15),
-                                child: Text(
-                                  'Penukaran Poin',
-                                  style: whiteTextStyle.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => DataSampah(),
-                      //   ),
-                      // );
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 170,
-                          height: 208,
-                          margin: EdgeInsets.only(top: 20),
-                          padding: EdgeInsets.symmetric(vertical: 35),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            color: Color(0xFF9549D2),
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child: Container(
-                                  width: 70,
-                                  height: 70,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFFC987FF),
-                                  ),
-                                  child: Center(
-                                    child: Image(
-                                      width: 20,
-                                      height: 42,
-                                      fit: BoxFit.contain,
-                                      image: AssetImage(
-                                          'assets/i_bottle_white.png'),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 15),
-                                child: Text(
-                                  'Lihat Data Sampah',
-                                  style: whiteTextStyle.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  softWrap: false,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => ManageProductPage(),
-                      //   ),
-                      // );
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 170,
-                          height: 208,
-                          margin: EdgeInsets.only(top: 20),
-                          padding: EdgeInsets.symmetric(vertical: 35),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            color: Color(0xFF0043A8),
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child: Container(
-                                  width: 70,
-                                  height: 70,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF6992EC),
-                                  ),
-                                  child: Center(
-                                    child: Image(
-                                      width: 32,
-                                      height: 40,
-                                      fit: BoxFit.contain,
-                                      image: AssetImage(
-                                          'assets/i_product_white.png'),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 15),
-                                child: Text(
-                                  'Kelola Data Barang',
-                                  style: whiteTextStyle.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

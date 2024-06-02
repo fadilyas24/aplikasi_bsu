@@ -7,6 +7,7 @@ Color orangeColor = Color(0xffFF9376);
 Color blackColor = Color(0xff000000);
 Color whiteColor = Color(0xffFFFFFF);
 Color greyColor = Color(0xff82868E);
+Color lightGreyColor = Color(0xffD0D0D0);
 Color redColor = Color(0xffE00000);
 Color lightColor = Color(0xffF5F5F5);
 Color greenColor = Color(0xff4ECB71);

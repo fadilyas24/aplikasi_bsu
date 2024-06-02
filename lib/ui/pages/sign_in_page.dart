@@ -57,9 +57,12 @@ class SignInPage extends StatelessWidget {
                 ),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Text(
-                    'Lupa Password',
-                    style: blueTextStyle.copyWith(fontSize: 14),
+                  child: CustomTextButton(
+                    title: 'Lupa Password',
+                    width: 110,
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/main-admin');
+                    },
                   ),
                 ),
                 SizedBox(height: 30),

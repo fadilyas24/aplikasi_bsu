@@ -1,5 +1,9 @@
 import 'package:aplikasi_bsu/shared/theme.dart';
 import 'package:aplikasi_bsu/ui/pages/activity_pages.dart';
+import 'package:aplikasi_bsu/ui/pages/admin_add_savings.dart';
+import 'package:aplikasi_bsu/ui/pages/admin_homepage.dart';
+import 'package:aplikasi_bsu/ui/pages/admin_manage_user_page.dart';
+import 'package:aplikasi_bsu/ui/pages/admin_user_data.dart';
 import 'package:aplikasi_bsu/ui/pages/edit_profile.dart';
 import 'package:aplikasi_bsu/ui/pages/home_page.dart';
 import 'package:aplikasi_bsu/ui/pages/main_page.dart';
@@ -48,6 +52,10 @@ class MyApp extends StatelessWidget {
         '/redeem-poin': (context) => RedeemPointPage(),
         '/pin': (context) => PinPage(),
         '/redeem-success':(context) => PoinRedeemSuccessPage(),
+        '/main-admin': (context) => MainAdmin(),
+        '/admin-manage-user': (context) => AdminManageUser(),
+        '/admin-user-data' :(context) => AdminUserData(),
+        '/admin_add_savings' :(context) => AdminAddSavings(),
       },
     );
   }

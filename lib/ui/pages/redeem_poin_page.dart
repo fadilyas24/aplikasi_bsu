@@ -32,7 +32,6 @@ class RedeemPointPage extends StatelessWidget {
                     title: 'Minyak Goreng',
                     imageUrl: 'assets/img_cooking_oil.png',
                     price: 500,
-                    
                   );
                 },
               );
