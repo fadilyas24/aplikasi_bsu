@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../shared/theme.dart';
 import '../widget/buttons.dart';
 
-class PoinRedeemSuccessPage extends StatelessWidget {
-  const PoinRedeemSuccessPage({super.key});
+class AdminAddSavingsSuccessPage extends StatelessWidget {
+  const AdminAddSavingsSuccessPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                   height: 30,
                 ),
                 Text(
-                  'Penukaran Poin Berhasil',
+                  'Tambah Tabungan Berhasil',
                   style: blackTextStyle.copyWith(
                     fontSize: 20,
                     fontWeight: semiBold,
@@ -41,13 +41,6 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                 SizedBox(
                   height: 16,
                 ),
-                Text(
-                  'Anda telah berhasil menukarkan poin, tetap menabung sampah dan dapatkan hadiah lainnya',
-                  style: greyTextStyle.copyWith(
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -63,31 +56,16 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Nama Barang',
-                            style: blackTextStyle.copyWith(fontSize: 14),
-                          ),
-                          Spacer(),
-                          Text(
-                            'Minyak Goreng',
-                            style: greyTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Tanggal Penukaran',
-                            style: blackTextStyle.copyWith(fontSize: 14),
+                            'Rincian Tabungan',
+                            style: blackTextStyle.copyWith(
+                                fontSize: 14, fontWeight: bold),
                           ),
                           Spacer(),
                           Text(
                             '31 Mei 2024',
                             style: greyTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),
@@ -97,14 +75,13 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Total Poin',
-                            style: blackTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
+                            'Plastik',
+                            style: regularTextStyle.copyWith(fontSize: 14),
                           ),
                           Spacer(),
                           Text(
                             '10 Poin',
-                            style: greyTextStyle.copyWith(
+                            style: blueTextStyle.copyWith(
                                 fontSize: 14, fontWeight: medium),
                           ),
                         ],
@@ -115,22 +92,69 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Status',
-                            style: blackTextStyle.copyWith(fontSize: 14),
+                            'Kertas',
+                            style: regularTextStyle.copyWith(fontSize: 14),
                           ),
                           Spacer(),
-                          Container(
-                            width: 130,
-                            height: 40,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: redColor),
-                            child: Center(
-                              child: Text(
-                                'Belum diambil',
-                                style: whiteTextStyle.copyWith(fontSize: 14),
-                              ),
+                          Text(
+                            '30 Poin',
+                            style: blueTextStyle.copyWith(
+                                fontSize: 14, fontWeight: medium),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Minyak Jelantah',
+                            style: regularTextStyle.copyWith(
+                                fontSize: 14, fontWeight: medium),
+                          ),
+                          Spacer(),
+                          Text(
+                            '0 Poin',
+                            style: blueTextStyle.copyWith(
+                                fontSize: 14, fontWeight: medium),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Kaca',
+                            style: regularTextStyle.copyWith(fontSize: 14),
+                          ),
+                          Spacer(),
+                          Text(
+                            '0 Poin',
+                            style: blueTextStyle.copyWith(
+                                fontSize: 14, fontWeight: medium),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Total',
+                            style: blackTextStyle.copyWith(
+                              fontSize: 14,
+                              fontWeight: bold,
                             ),
+                          ),
+                          Spacer(),
+                          Text(
+                            '40 Poin',
+                            style: blueTextStyle.copyWith(
+                                fontSize: 14, fontWeight: medium),
                           ),
                         ],
                       ),
@@ -138,13 +162,13 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: 100,
+                  height: 130,
                 ),
                 CustomFilledButton(
                   title: 'Kembali ke Beranda',
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
-                        context, '/main-home', (route) => false);
+                        context, '/main-admin', (route) => false);
                   },
                 ),
               ],

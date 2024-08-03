@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../../shared/theme.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class AdminProfilePage extends StatelessWidget {
+  const AdminProfilePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightColor,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: Text(
           'Profil Saya',
         ),
@@ -35,36 +35,36 @@ class ProfilePage extends StatelessWidget {
                 UserProfileCard(
                     imgUrl: 'assets/img_profile.png',
                     name: 'Jack Sparrow',
-                    email: 'jackseparo@gmail.com'),
+                    email: 'admin'),
               ],
             ),
           ),
           const SizedBox(height: 25),
-          ProfileItem(
-            title: 'Edit Profil',
-            iconUrl: 'assets/i_profile_bold.png',
-            iconColor: blueColor,
-            onTap: () async {
-              if (await Navigator.pushNamed(context, '/pin') == true) {
-                Navigator.pushNamed(context, '/edit-profile');
-              }
-            },
-          ),
-          ProfileItem(
-            title: 'Pin Saya',
-            iconUrl: 'assets/i_pin.png',
-            iconColor: blueColor,
-          ),
+          // ProfileItem(
+          //   title: 'Edit Profil',
+          //   iconUrl: 'assets/i_profile_bold.png',
+          //   iconColor: blueColor,
+          //   onTap: () async {
+          //     if (await Navigator.pushNamed(context, '/pin') == true) {
+          //       Navigator.pushNamed(context, '/edit-profile');
+          //     }
+          //   },
+          // ),
+          // ProfileItem(
+          //   title: 'Pin Saya',
+          //   iconUrl: 'assets/i_pin.png',
+          //   iconColor: blueColor,
+          // ),
           ProfileItem(
             title: 'Ubah Bahasa',
             iconUrl: 'assets/i_language.png',
             iconColor: blueColor,
           ),
-          ProfileItem(
-            title: 'Ubah Password',
-            iconUrl: 'assets/i_password.png',
-            iconColor: blueColor,
-          ),
+          // ProfileItem(
+          //   title: 'Ubah Password',
+          //   iconUrl: 'assets/i_password.png',
+          //   iconColor: blueColor,
+          // ),
           ProfileItem(
             title: 'Pusat Bantuan',
             iconUrl: 'assets/i_help_center.png',

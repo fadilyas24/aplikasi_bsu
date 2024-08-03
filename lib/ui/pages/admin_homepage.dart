@@ -23,6 +23,7 @@ class _MainAdminState extends State<MainAdmin> {
       bottomNavigationBar: Container(
         height: 80,
         child: BottomAppBar(
+          padding: EdgeInsets.zero,
           color: whiteColor,
           child: Material(
             shadowColor: greyColor,
@@ -89,12 +90,16 @@ class _MainAdminState extends State<MainAdmin> {
               borderRadius: BorderRadius.circular(20),
               color: whiteColor,
             ),
-            child: const Column(
+            child: Column(
               children: [
                 UserProfileCard(
-                    imgUrl: 'assets/img_profile.png',
-                    name: 'Jack Sparrow',
-                    email: 'Admin'),
+                  imgUrl: 'assets/img_profile.png',
+                  name: 'Jack Sparrow',
+                  email: 'Admin',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/admin-profile');
+                  },
+                ),
               ],
             ),
           ),

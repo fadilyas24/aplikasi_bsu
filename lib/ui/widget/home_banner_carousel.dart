@@ -81,21 +81,6 @@ class _BannerCarouselState extends State<BannerCarousel> {
             },
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (int i = 0; i < 4; i++)
-              Container(
-                width: 20,
-                height: 4,
-                margin: EdgeInsets.only(top: 10, right: 5),
-                decoration: BoxDecoration(
-                  color: i == carouselIndex ? blueColor : greyColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-          ],
-        )
       ],
     );
   }

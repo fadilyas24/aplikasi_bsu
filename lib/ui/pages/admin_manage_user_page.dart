@@ -16,7 +16,7 @@ class AdminManageUser extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: edge),
         child: ListView(
-          children:  [
+          children: [
             const CustomFormField(
               title: '',
               formHintText: 'Cari Nasabah',
@@ -30,25 +30,34 @@ class AdminManageUser extends StatelessWidget {
               },
             ),
             const AdminUserCard(
-              name: 'Jack Sparrow',
-              email: 'jackseparo@gmail.com',
+              name: 'Leonardo Dicaprio',
+              email: 'leonardo@gmail.com',
             ),
             const AdminUserCard(
-              name: 'Jack Sparrow',
-              email: 'jackseparo@gmail.com',
+              name: 'Marlon Brando',
+              email: 'marlon@gmail.com',
             ),
             const AdminUserCard(
-              name: 'Jack Sparrow',
-              email: 'jackseparo@gmail.com',
+              name: 'Christopher Nolan',
+              email: 'chris@gmail.com',
             ),
             const AdminUserCard(
-              name: 'Jack Sparrow',
-              email: 'jackseparo@gmail.com',
+              name: 'Tom Hanks',
+              email: 'tom@gmail.com',
             ),
             const AdminUserCard(
-              name: 'Jack Sparrow',
-              email: 'jackseparo@gmail.com',
+              name: 'Kylian Mbappe',
+              email: 'kylian@gmail.com',
             ),
+            const AdminUserCard(
+              name: 'Florian Wirtz',
+              email: 'florian@gmail.com',
+            ),
+            const AdminUserCard(
+              name: 'John Doe',
+              email: 'john@gmail.com',
+            ),
+            SizedBox(height: 20),
           ],
         ),
       ),

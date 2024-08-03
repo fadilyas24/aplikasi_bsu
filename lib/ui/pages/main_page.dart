@@ -33,6 +33,7 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: Container(
         height: 80,
         child: BottomAppBar(
+          padding: EdgeInsets.zero,
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             elevation: 0,

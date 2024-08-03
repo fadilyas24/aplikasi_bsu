@@ -13,10 +13,51 @@ class SignInPage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: edge),
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/main-admin');
+                },
+                child: Container(
+                  margin: EdgeInsets.only(top: 40),
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: blueColor),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                            child: Icon(Icons.person_outline_outlined,
+                                color: blueColor)),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'Admin',
+                        style: regularTextStyle.copyWith(
+                            color: whiteColor, fontSize: 14),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
           Container(
-            width: 220,
-            height: 165,
-            margin: EdgeInsets.only(top: 80, bottom: 50),
+            width: 200,
+            height: 145,
+            margin: EdgeInsets.only(top: 30, bottom: 30),
             decoration: const BoxDecoration(
               image: DecorationImage(image: AssetImage('assets/logo_bsu.png')),
             ),
@@ -60,9 +101,7 @@ class SignInPage extends StatelessWidget {
                   child: CustomTextButton(
                     title: 'Lupa Password',
                     width: 110,
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/main-admin');
-                    },
+                    onPressed: () {},
                   ),
                 ),
                 SizedBox(height: 30),

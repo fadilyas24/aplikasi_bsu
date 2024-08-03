@@ -87,7 +87,7 @@ class _AdminUserDataState extends State<AdminUserData> {
             elevation: 20,
             title: 'Tambah Catatan',
             onPressed: () {
-              Navigator.pushNamed(context, '/admin_add_savings');
+              Navigator.pushNamed(context, '/admin-add-savings');
             },
           ),
         ),

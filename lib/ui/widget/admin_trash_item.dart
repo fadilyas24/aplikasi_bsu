@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:aplikasi_bsu/shared/theme.dart';
 
+
 class AdminTrashItem extends StatelessWidget {
   final String imageUrl;
   final String title;
@@ -154,6 +155,59 @@ class _QuantityFieldState extends State<QuantityField> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AdminTrashItemAutomatic extends StatelessWidget {
+  final String imageUrl;
+  final String title;
+
+  final VoidCallback? onTap;
+
+  const AdminTrashItemAutomatic({
+    Key? key,
+    required this.imageUrl,
+    required this.title,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: whiteColor,
+        ),
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 149,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: AssetImage(imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              title,
+              style: regularTextStyle.copyWith(
+                fontSize: 16,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(height: 10),
+
+          ],
+        ),
       ),
     );
   }
