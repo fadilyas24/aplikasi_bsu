@@ -12,7 +12,7 @@ class SignInPage extends StatelessWidget {
   Future<void> loginUser(
       BuildContext context, String email, String password) async {
     const String url =
-        'http://10.60.64.19:5000/user/login'; // Ubah sesuai URL API Flask Anda
+        'http://10.60.64.84:5000/user/login'; // Ubah sesuai URL API Flask Anda
 
     final response = await http.post(
       Uri.parse(url),
@@ -39,7 +39,7 @@ class SignInPage extends StatelessWidget {
       print('Login successful: ${responseData}');
       // Simpan token akses dan data pengguna ke dalam storage (shared preferences atau lainnya)
       Navigator.pushNamed(context, '/main-home');
-    } else {
+    } else if (response.statusCode == 401) {
       print('Failed to login: ${response.body}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login gagal: ${response.body}')),

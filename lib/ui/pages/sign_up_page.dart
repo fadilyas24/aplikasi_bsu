@@ -129,7 +129,7 @@ class SignUpPage extends StatelessWidget {
   Future<void> registerUser(BuildContext context, String fullName, String email,
       String password) async {
     const String url =
-        'http://10.60.64.19:5000/user/signup'; // Ubah sesuai URL API Flask Anda
+        'http://10.60.64.84:5000/user/signup'; // Ubah sesuai URL API Flask Anda
 
     final response = await http.post(
       Uri.parse(url),

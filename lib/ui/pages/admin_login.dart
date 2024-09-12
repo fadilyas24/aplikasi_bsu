@@ -22,7 +22,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     });
 
     final response = await http.post(
-      Uri.parse('http://10.60.64.19:5000/admin/login'),  // Mengarahkan ke endpoint admin login
+      Uri.parse('http://10.60.64.84:5000/admin/login'),  // Mengarahkan ke endpoint admin login
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': _usernameController.text,  // Mengirimkan username bukan email

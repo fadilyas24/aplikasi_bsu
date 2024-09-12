@@ -7,6 +7,7 @@ import 'package:aplikasi_bsu/ui/pages/admin_login.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_manage_user_page.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_profile_page.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_user_data.dart';
+import 'package:aplikasi_bsu/ui/pages/change_password.dart';
 import 'package:aplikasi_bsu/ui/pages/edit_profile.dart';
 import 'package:aplikasi_bsu/ui/pages/home_page.dart';
 import 'package:aplikasi_bsu/ui/pages/main_page.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
         '/admin-add-savings': (context) => AdminAddSavings(),
         '/admin-add-savings-success': (context) => AdminAddSavingsSuccessPage(),
         '/admin-profile': (context) => AdminProfilePage(),
+        '/change-password' : (context) => ChangePasswordScreen(),
       },
     );
   }

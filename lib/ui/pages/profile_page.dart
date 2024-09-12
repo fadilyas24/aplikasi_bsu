@@ -1,3 +1,4 @@
+import 'package:aplikasi_bsu/ui/pages/change_password.dart';
 import 'package:aplikasi_bsu/ui/widget/profile_item.dart';
 import 'package:aplikasi_bsu/ui/widget/user_profile_card.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
       try {
         final response = await http.get(
           Uri.parse(
-              'http://10.60.64.19:5000/user-sessions'), // Ganti dengan URL API Anda
+              'http://10.60.64.84:5000/user-sessions'), // Ganti dengan URL API Anda
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -142,11 +143,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                 ),
                 ProfileItem(
-                  title: 'Pin Saya',
-                  iconUrl: 'assets/i_pin.png',
-                  iconColor: blueColor,
-                ),
-                ProfileItem(
                   title: 'Ubah Bahasa',
                   iconUrl: 'assets/i_language.png',
                   iconColor: blueColor,
@@ -155,6 +151,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Ubah Password',
                   iconUrl: 'assets/i_password.png',
                   iconColor: blueColor,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangePasswordScreen(),
+                      ),
+                    );
+                  },
                 ),
                 ProfileItem(
                   title: 'Pusat Bantuan',
