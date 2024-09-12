@@ -29,3 +29,11 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// plugins {
+//     id 'com.android.application'
+//     id 'kotlin-android'
+//     id 'kotlin-android-extensions'
+//     id 'com.google.gms.google-services'  // Jika Anda menggunakan Google Services
+//     id 'com.google.firebase.crashlytics'  // Jika Anda menggunakan Firebase Crashlytics
+// }

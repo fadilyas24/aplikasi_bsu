@@ -1,13 +1,57 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'package:aplikasi_bsu/shared/theme.dart';
 import 'package:aplikasi_bsu/ui/widget/buttons.dart';
 import 'package:aplikasi_bsu/ui/widget/forms.dart';
-import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
 
+  Future<void> loginUser(
+      BuildContext context, String email, String password) async {
+    const String url =
+        'http://10.60.64.19:5000/user/login'; // Ubah sesuai URL API Flask Anda
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      String token = responseData['access_token'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt_token', token);
+      await prefs.setString('user_id', responseData['user_id'].toString());
+
+      // await prefs.setString('full_name', responseData['full_name'] ?? '');
+      // await prefs.setString('user_address', responseData['user_address'] ?? '');
+      // await prefs.setString('phone_number', responseData['phone_number'] ?? '');
+
+      print('Login successful: ${responseData}');
+      // Simpan token akses dan data pengguna ke dalam storage (shared preferences atau lainnya)
+      Navigator.pushNamed(context, '/main-home');
+    } else {
+      print('Failed to login: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login gagal: ${response.body}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
       backgroundColor: lightColor,
       body: ListView(
@@ -18,7 +62,7 @@ class SignInPage extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, '/main-admin');
+                  Navigator.pushNamed(context, '/admin-login');
                 },
                 child: Container(
                   margin: EdgeInsets.only(top: 40),
@@ -79,19 +123,21 @@ class SignInPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //EMAIL INPUT
+                // EMAIL INPUT
                 CustomFormField(
                   title: 'Email',
                   formHintText: 'Masukkan email anda',
+                  controller: emailController,
                 ),
                 SizedBox(
                   height: 16,
                 ),
-                //PASSWORD INPUT
+                // PASSWORD INPUT
                 CustomFormField(
                   title: 'Password',
                   formHintText: 'Masukkan password Anda',
                   obscureText: true,
+                  controller: passwordController,
                 ),
                 SizedBox(
                   height: 8,
@@ -107,8 +153,12 @@ class SignInPage extends StatelessWidget {
                 SizedBox(height: 30),
                 CustomFilledButton(
                   title: 'Masuk',
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/main-home');
+                  onPressed: () async {
+                    await loginUser(
+                      context,
+                      emailController.text,
+                      passwordController.text,
+                    );
                   },
                 ),
                 SizedBox(

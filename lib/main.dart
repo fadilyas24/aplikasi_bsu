@@ -3,6 +3,7 @@ import 'package:aplikasi_bsu/ui/pages/activity_pages.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_add_savings.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_add_savings_success_page.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_homepage.dart';
+import 'package:aplikasi_bsu/ui/pages/admin_login.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_manage_user_page.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_profile_page.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_user_data.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => SignInPage(),
+        '/admin-login' : (context) => AdminLoginPage(),
         '/sign-up': (context) => SignUpPage(),
         '/home': (context) => HomePage(),
         '/main-home': (context) => MainPage(),
