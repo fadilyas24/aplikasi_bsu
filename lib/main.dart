@@ -46,24 +46,32 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => SignInPage(),
-        '/admin-login' : (context) => AdminLoginPage(),
+        '/admin-login': (context) => AdminLoginPage(),
         '/sign-up': (context) => SignUpPage(),
         '/home': (context) => HomePage(),
         '/main-home': (context) => MainPage(),
         '/notification': (context) => NotificationPage(),
         '/profile': (context) => ProfilePage(),
-        '/activity': (context) => ActivtyPages(),
+        '/activity': (context) => ActivityPage(),
         '/edit-profile': (context) => EditProfilePage(),
         '/redeem-poin': (context) => RedeemPointPage(),
         '/pin': (context) => PinPage(),
-        '/redeem-success': (context) => PoinRedeemSuccessPage(),
+        '/redeem-success': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return PoinRedeemSuccessPage(
+            productName: args['productName'],
+            pointsUsed: args['pointsUsed'],
+            currentDate: args['currentDate'],
+          );
+        },
         '/main-admin': (context) => MainAdmin(),
         '/admin-manage-user': (context) => AdminManageUser(),
         '/admin-user-data': (context) => AdminUserData(),
         '/admin-add-savings': (context) => AdminAddSavings(),
         '/admin-add-savings-success': (context) => AdminAddSavingsSuccessPage(),
         '/admin-profile': (context) => AdminProfilePage(),
-        '/change-password' : (context) => ChangePasswordScreen(),
+        '/change-password': (context) => ChangePasswordScreen(),
       },
     );
   }

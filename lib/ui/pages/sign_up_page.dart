@@ -129,7 +129,7 @@ class SignUpPage extends StatelessWidget {
   Future<void> registerUser(BuildContext context, String fullName, String email,
       String password) async {
     const String url =
-        'http://10.60.64.84:5000/user/signup'; // Ubah sesuai URL API Flask Anda
+        'http://192.168.1.9:5000/user/signup'; // Ubah sesuai URL API Flask Anda
 
     final response = await http.post(
       Uri.parse(url),
@@ -183,75 +183,206 @@ class SignUpPage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: edge),
         children: [
-          // Widget lainnya
-          CustomFormField(
-            title: 'Nama Lengkap',
-            formHintText: 'Masukkan nama lengkap anda',
-            controller: fullNameController,
-          ),
-          CustomFormField(
-            title: 'Email',
-            formHintText: 'Masukkan email anda',
-            controller: emailController,
-          ),
-          CustomFormField(
-            title: 'Password',
-            formHintText: 'Masukkan password Anda',
-            obscureText: true,
-            controller: passwordController,
-          ),
-          CustomFormField(
-            title: 'Konfirmasi Password',
-            formHintText: 'Konfirmasi password Anda',
-            obscureText: true,
-            controller: confirmPasswordController,
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          CustomFilledButton(
-            title: 'Daftar',
-            onPressed: () async {
-              if (passwordController.text == confirmPasswordController.text) {
-                await registerUser(
-                  context,
-                  fullNameController.text,
-                  emailController.text,
-                  passwordController.text,
-                );
-              } else {
-                print('Password tidak cocok');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Password tidak cocok')),
-                );
-              }
-            },
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Sudah memiliki akun?',
-                style: regularTextStyle,
+          Container(
+            width: 151,
+            height: 75,
+            margin: EdgeInsets.only(
+              top: 40,
+              bottom: 25,
+            ),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/logo_bsu.png'),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignInPage()));
-                },
-                child: Text(
-                  'Masuk',
-                  style: regularTextStyle.copyWith(
-                      color: blueColor, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Text(
+            'Ayo Daftar &\nSetorkan Sampahmu',
+            style: blackTextStyle.copyWith(
+                fontSize: 18, fontWeight: FontWeight.w700),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: whiteColor,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //NAME INPUT
+                CustomFormField(
+                  title: 'Nama Lengkap',
+                  formHintText: 'Masukkan nama lengkap anda',
+                  controller: fullNameController,
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 16,
+                ),
+                //EMAIL INPUT
+                CustomFormField(
+                  title: 'Email',
+                  formHintText: 'Masukkan email anda',
+                  controller: emailController,
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                //PASSWORD INPUT
+                CustomFormField(
+                  title: 'Password',
+                  formHintText: 'Masukkan password Anda',
+                  obscureText: true,
+                  controller: passwordController,
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                // KONFIRMASI PASSWORD INPUT
+                CustomFormField(
+                  title: 'Konfirmasi Password',
+                  formHintText: 'Konfirmasi password Anda',
+                  obscureText: true,
+                  controller: confirmPasswordController,
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                CustomFilledButton(
+                  title: 'Daftar',
+                  onPressed: () async {
+                    if (passwordController.text ==
+                        confirmPasswordController.text) {
+                      await registerUser(
+                        context,
+                        fullNameController.text,
+                        emailController.text,
+                        passwordController.text,
+                      );
+                    } else {
+                      print('Password tidak cocok');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Password tidak cocok')),
+                      );
+                    }
+                  },
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Sudah memiliki akun?',
+                      style: regularTextStyle,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignInPage()));
+                      },
+                      child: Text(
+                        'Masuk',
+                        style: regularTextStyle.copyWith(
+                            color: blueColor, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+          // Widget lainnya
+//           CustomFormField(
+//             title: 'Nama Lengkap',
+//             formHintText: 'Masukkan nama lengkap anda',
+//             controller: fullNameController,
+//           ),
+//           CustomFormField(
+//             title: 'Email',
+//             formHintText: 'Masukkan email anda',
+//             controller: emailController,
+//           ),
+//           CustomFormField(
+//             title: 'Password',
+//             formHintText: 'Masukkan password Anda',
+//             obscureText: true,
+//             controller: passwordController,
+//           ),
+//           CustomFormField(
+//             title: 'Konfirmasi Password',
+//             formHintText: 'Konfirmasi password Anda',
+//             obscureText: true,
+//             controller: confirmPasswordController,
+//           ),
+//           SizedBox(
+//             height: 30,
+//           ),
+//           CustomFilledButton(
+//             title: 'Daftar',
+//             onPressed: () async {
+//               if (passwordController.text == confirmPasswordController.text) {
+//                 await registerUser(
+//                   context,
+//                   fullNameController.text,
+//                   emailController.text,
+//                   passwordController.text,
+//                 );
+//               } else {
+//                 print('Password tidak cocok');
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                   SnackBar(content: Text('Password tidak cocok')),
+//                 );
+//               }
+//             },
+//           ),
+//           SizedBox(
+//             height: 10,
+//           ),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text(
+//                 'Sudah memiliki akun?',
+//                 style: regularTextStyle,
+//               ),
+//               TextButton(
+//                 onPressed: () {
+//                   Navigator.push(context,
+//                       MaterialPageRoute(builder: (context) => SignInPage()));
+//                 },
+//                 child: Text(
+//                   'Masuk',
+//                   style: regularTextStyle.copyWith(
+//                       color: blueColor, fontWeight: FontWeight.bold),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

@@ -1,4 +1,5 @@
 import 'package:aplikasi_bsu/shared/theme.dart';
+import 'package:aplikasi_bsu/ui/pages/activity_pages.dart';
 import 'package:aplikasi_bsu/ui/widget/buttons.dart';
 import 'package:aplikasi_bsu/ui/widget/home_balance_card.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,9 @@ import '../widget/home_banner_carousel.dart';
 import '../widget/home_service_item.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int points;
+  final int voucher;
+  const HomePage({super.key, this.points = 0, this.voucher = 0});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -92,17 +95,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildBalanceCard() {
-    return const Row(
+    return Row(
       children: [
         BalanceCard(
           title: 'Poin Kamu',
-          balance: '15.000',
+          balance: widget.points.toString(), // Gunakan poin dari parameter
           imgUrl: 'assets/img_poin_balance.png',
         ),
-        Spacer(),
+        const Spacer(),
         BalanceCard(
           title: 'Voucher Kamu',
-          balance: '10',
+          balance: widget.voucher.toString(),
           imgUrl: 'assets/img_voucher_balance.png',
         ),
       ],
@@ -189,7 +192,10 @@ class _HomePageState extends State<HomePage> {
               Spacer(),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/activity');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ActivityPage()),
+                  );
                 },
                 child: Text(
                   'Lihat Semua',
@@ -212,34 +218,10 @@ class _HomePageState extends State<HomePage> {
             child: const Column(
               children: [
                 ActvityItem(
-                  iconUrl: 'assets/i_activity_deposit.png',
-                  title: 'Menabung Sampah',
-                  time: 'Hari ini',
-                  value: '+ 500',
-                ),
-                ActvityItem(
                   iconUrl: 'assets/i_activity_exchange.png',
                   title: 'Menukar Poin',
                   time: '1 Mei 2024',
-                  value: '- 1500',
-                ),
-                ActvityItem(
-                  iconUrl: 'assets/i_activity_deposit.png',
-                  title: 'Menabung Sampah',
-                  time: '25 April 2024',
-                  value: '+ 300',
-                ),
-                ActvityItem(
-                  iconUrl: 'assets/i_activity_exchange.png',
-                  title: 'Menukar Poin',
-                  time: '14 April 2024',
-                  value: '- 300',
-                ),
-                ActvityItem(
-                  iconUrl: 'assets/i_activity_deposit.png',
-                  title: 'Menabung Sampah',
-                  time: '10 April 2024',
-                  value: '+ 200',
+                  value: '-200',
                 ),
               ],
             ),

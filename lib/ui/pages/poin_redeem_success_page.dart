@@ -4,7 +4,16 @@ import '../../shared/theme.dart';
 import '../widget/buttons.dart';
 
 class PoinRedeemSuccessPage extends StatelessWidget {
-  const PoinRedeemSuccessPage({super.key});
+  final String productName;
+  final int pointsUsed;
+  final DateTime currentDate;
+
+  const PoinRedeemSuccessPage({
+    super.key,
+    required this.productName,
+    required this.pointsUsed,
+    required this.currentDate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +24,7 @@ class PoinRedeemSuccessPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: edge),
             child: Column(
               children: [
-                SizedBox(
-                  height: 30,
-                ),
+                SizedBox(height: 30),
                 Text(
                   'Penukaran Poin Berhasil',
                   style: blackTextStyle.copyWith(
@@ -25,9 +32,7 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                     fontWeight: semiBold,
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   width: 130,
                   height: 130,
@@ -38,19 +43,13 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 16,
-                ),
+                SizedBox(height: 16),
                 Text(
                   'Anda telah berhasil menukarkan poin, tetap menabung sampah dan dapatkan hadiah lainnya',
-                  style: greyTextStyle.copyWith(
-                    fontSize: 16,
-                  ),
+                  style: greyTextStyle.copyWith(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(20),
@@ -68,15 +67,13 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                           ),
                           Spacer(),
                           Text(
-                            'Minyak Goreng',
+                            productName,
                             style: greyTextStyle.copyWith(
                                 fontSize: 14, fontWeight: medium),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
+                      SizedBox(height: 30),
                       Row(
                         children: [
                           Text(
@@ -85,15 +82,13 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                           ),
                           Spacer(),
                           Text(
-                            '31 Mei 2024',
+                            '${currentDate.day}-${currentDate.month}-${currentDate.year}',
                             style: greyTextStyle.copyWith(
                                 fontSize: 14, fontWeight: medium),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
+                      SizedBox(height: 30),
                       Row(
                         children: [
                           Text(
@@ -103,15 +98,13 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                           ),
                           Spacer(),
                           Text(
-                            '10 Poin',
+                            '$pointsUsed Poin',
                             style: greyTextStyle.copyWith(
                                 fontSize: 14, fontWeight: medium),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      SizedBox(height: 20),
                       Row(
                         children: [
                           Text(
@@ -123,8 +116,9 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                             width: 130,
                             height: 40,
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: redColor),
+                              borderRadius: BorderRadius.circular(100),
+                              color: redColor,
+                            ),
                             child: Center(
                               child: Text(
                                 'Belum diambil',
@@ -137,19 +131,20 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 100,
-                ),
+                SizedBox(height: 100),
                 CustomFilledButton(
                   title: 'Kembali ke Beranda',
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
-                        context, '/main-home', (route) => false);
+                      context,
+                      '/main-home',
+                      (route) => false,
+                    );
                   },
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

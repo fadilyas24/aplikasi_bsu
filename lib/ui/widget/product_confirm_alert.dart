@@ -1,16 +1,20 @@
 // import 'package:aplikasi_bsu/ui/pages/poin_redeem_success_page.dart';
 import 'package:flutter/material.dart';
 import '../../shared/theme.dart';
+import '../pages/poin_redeem_success_page.dart';
 
 class ConfirmChangesProduct extends StatefulWidget {
   final String title;
   final String imageUrl;
   final int price;
+  final Function(int totalItems) onConfirm; // Tambahkan parameter callback
+
   const ConfirmChangesProduct({
     super.key,
     required this.title,
     required this.imageUrl,
     required this.price,
+    required this.onConfirm, // Inisialisasi callback
   });
 
   @override
@@ -171,9 +175,18 @@ class _ConfirmChangesProductState extends State<ConfirmChangesProduct> {
                   elevation: MaterialStateProperty.all<double>(0),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(
+                  widget
+                      .onConfirm(_counter); // Kembalikan jumlah item ke parent
+                  Navigator.pop(context); // Tutup dialog
+                  Navigator.push(
                     context,
-                    '/redeem-success',
+                    MaterialPageRoute(
+                      builder: (context) => PoinRedeemSuccessPage(
+                        productName: widget.title, // Nama produk
+                        pointsUsed: _price, // Total poin yang digunakan
+                        currentDate: DateTime.now(), // Tanggal sekarang
+                      ),
+                    ),
                   );
                 },
                 child: Text(
