@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
       try {
         final response = await http.get(
           Uri.parse(
-              'http://10.60.64.84:5000/user-sessions'), // Ganti dengan URL API Anda
+              'http://192.168.1.9:5000/user-sessions'), // Ganti dengan URL API Anda
           headers: {
             'Authorization': 'Bearer $token',
           },

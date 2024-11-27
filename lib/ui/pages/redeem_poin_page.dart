@@ -75,11 +75,14 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({'price': price}),
+      body: jsonEncode({
+        'price': price,
+        'product_name' : productName,
+        }),
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response      .body);
+      final data = json.decode(response.body);
       int updatedPoints = data['new_points'];
 
       setState(() {

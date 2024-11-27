@@ -10,7 +10,13 @@ import '../widget/home_service_item.dart';
 class HomePage extends StatefulWidget {
   final int points;
   final int voucher;
-  const HomePage({super.key, this.points = 0, this.voucher = 0});
+  final List<Map<String, dynamic>> activityLogs;
+  const HomePage({
+    super.key,
+    this.points = 0,
+    this.voucher = 0,
+    this.activityLogs = const [],
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -199,8 +205,10 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: Text(
                   'Lihat Semua',
-                  style:
-                      regularTextStyle.copyWith(fontSize: 12, color: greyColor),
+                  style: regularTextStyle.copyWith(
+                    fontSize: 12,
+                    color: greyColor,
+                  ),
                 ),
               ),
             ],
@@ -215,22 +223,77 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(15),
               color: whiteColor,
             ),
-            child: const Column(
-              children: [
-                ActvityItem(
-                  iconUrl: 'assets/i_activity_exchange.png',
-                  title: 'Menukar Poin',
-                  time: '1 Mei 2024',
-                  value: '-200',
-                ),
-              ],
+            child: Column(
+              children: widget.activityLogs.isNotEmpty
+                  ? widget.activityLogs.map((log) {
+                      final date = DateTime.parse(log['date']);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.card_giftcard, color: Colors.purple),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    log['title'],
+                                    style: blackTextStyle.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    log['productName'],
+                                    style: greyTextStyle.copyWith(fontSize: 12),
+                                  ),
+                                  Text(
+                                    '${date.day} ${_getMonthName(date.month)} ${date.year}',
+                                    style: greyTextStyle.copyWith(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '-${log['pointsUsed']} Poin',
+                              style: blueTextStyle.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList()
+                  : [
+                      Text(
+                        'Belum ada aktivitas.',
+                        style: greyTextStyle.copyWith(fontSize: 14),
+                      )
+                    ],
             ),
           ),
-          SizedBox(
-            height: 30,
-          )
         ],
       ),
     );
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ];
+    return months[month - 1];
   }
 }

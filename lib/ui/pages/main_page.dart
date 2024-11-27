@@ -18,28 +18,13 @@ class _MainPageState extends State<MainPage> {
   int currentMenu = 0;
   Map<String, dynamic>? userProfile;
   bool isLoading = true;
-
-  Widget bottomNavigationBar() {
-    switch (currentMenu) {
-      case 0:
-        return HomePage(
-            points: userProfile?['points'] ?? 0,
-            voucher: userProfile?['voucher'] ?? 0);
-      case 1:
-        return const NotificationPage();
-      case 2:
-        return const ProfilePage();
-      default:
-        return HomePage(
-            points: userProfile?['points'] ?? 0,
-            voucher: userProfile?['voucher'] ?? 0);
-    }
-  }
+  List<Map<String, dynamic>> activityLogs = []; // Tambahkan properti ini
 
   @override
   void initState() {
     super.initState();
     _fetchUserProfile();
+    fetchActivityLogs(); // Panggil fungsi untuk fetch log aktivitas
   }
 
   Future<void> _fetchUserProfile() async {
@@ -48,8 +33,7 @@ class _MainPageState extends State<MainPage> {
     if (token != null) {
       try {
         final response = await http.get(
-          Uri.parse(
-              'http://192.168.1.9:5000/user-sessions'), // Ganti dengan URL API Anda
+          Uri.parse('http://192.168.1.9:5000/user-sessions'), // Ganti URL dengan API Anda
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -88,14 +72,60 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  Future<void> fetchActivityLogs() async {
+    try {
+      String? token = await getToken();
+      if (token == null) throw Exception('Token is missing');
+
+      final response = await http.get(
+        Uri.parse('http://192.168.1.9:5000/redeem-activities'), // URL API untuk log aktivitas
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> logs = json.decode(response.body);
+        setState(() {
+          activityLogs = logs.map((log) => {
+            'title': log['title'],
+            'productName': log['product_name'],
+            'pointsUsed': log['redeemed_points'],
+            'date': log['time'],
+          }).toList();
+        });
+      } else {
+        throw Exception('Failed to fetch activity logs');
+      }
+    } catch (e) {
+      print('Error fetching logs: $e');
+    }
+  }
+
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('jwt_token');
   }
 
-  Future<void> _refreshProfile() async {
-    // Refresh user profile data
-    await _fetchUserProfile();
+  Widget bottomNavigationBar() {
+    switch (currentMenu) {
+      case 0:
+        return HomePage(
+          points: userProfile?['points'] ?? 0,
+          voucher: userProfile?['voucher'] ?? 0,
+          activityLogs: activityLogs, // Kirim data log aktivitas ke HomePage
+        );
+      case 1:
+        return const NotificationPage();
+      case 2:
+        return const ProfilePage();
+      default:
+        return HomePage(
+          points: userProfile?['points'] ?? 0,
+          voucher: userProfile?['voucher'] ?? 0,
+          activityLogs: activityLogs, // Kirim data log aktivitas ke HomePage
+        );
+    }
   }
 
   @override
@@ -123,7 +153,7 @@ class _MainPageState extends State<MainPage> {
             ),
             currentIndex: currentMenu,
             onTap: (value) {
-              debugPrint('Current Menu ${value}');
+              debugPrint('Current Menu $value');
               setState(() {
                 currentMenu = value;
               });

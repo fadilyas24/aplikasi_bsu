@@ -189,7 +189,7 @@ class _MainAdminState extends State<MainAdmin> {
 
       // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://10.60.64.84:5000/admin/profile'),
+        Uri.parse('http://192.168.1.9:5000/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token', // Sertakan token JWT di header
