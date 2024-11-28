@@ -33,7 +33,8 @@ class _MainPageState extends State<MainPage> {
     if (token != null) {
       try {
         final response = await http.get(
-          Uri.parse('http://192.168.1.9:5000/user-sessions'), // Ganti URL dengan API Anda
+          Uri.parse(
+              'http://192.168.1.9:5000/user-sessions'), // Ganti URL dengan API Anda
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -78,7 +79,8 @@ class _MainPageState extends State<MainPage> {
       if (token == null) throw Exception('Token is missing');
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/redeem-activities'), // URL API untuk log aktivitas
+        Uri.parse(
+            'http://192.168.1.9:5000/redeem-activities'), // URL API untuk log aktivitas
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -87,12 +89,14 @@ class _MainPageState extends State<MainPage> {
       if (response.statusCode == 200) {
         final List<dynamic> logs = json.decode(response.body);
         setState(() {
-          activityLogs = logs.map((log) => {
-            'title': log['title'],
-            'productName': log['product_name'],
-            'pointsUsed': log['redeemed_points'],
-            'date': log['time'],
-          }).toList();
+          activityLogs = logs
+              .map((log) => {
+                    'title': log['title'],
+                    'productName': log['product_name'],
+                    'pointsUsed': log['redeemed_points'],
+                    'date': log['time'],
+                  })
+              .toList();
         });
       } else {
         throw Exception('Failed to fetch activity logs');

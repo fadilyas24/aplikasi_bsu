@@ -3,7 +3,7 @@ import 'package:aplikasi_bsu/ui/pages/activity_pages.dart';
 import 'package:aplikasi_bsu/ui/widget/buttons.dart';
 import 'package:aplikasi_bsu/ui/widget/home_balance_card.dart';
 import 'package:flutter/material.dart';
-import '../widget/home_activity.dart';
+// import '../widget/home_activity.dart';
 import '../widget/home_banner_carousel.dart';
 import '../widget/home_service_item.dart';
 

@@ -35,7 +35,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/user-sessions'),
+        Uri.parse('http://10.60.40.27:5000/user-sessions'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -61,58 +61,57 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
   }
 
   Future<void> redeemPoints(int price, String productName) async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('jwt_token');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
 
-    if (token == null) {
-      throw Exception('Token is missing');
-    }
+      if (token == null) {
+        throw Exception('Token is missing');
+      }
 
-    final response = await http.post(
-      Uri.parse('http://192.168.1.9:5000/redeem-points'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'price': price,
-        'product_name' : productName,
+      final response = await http.post(
+        Uri.parse('http://192.168.1.9:5000/redeem-points'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'price': price,
+          'product_name': productName,
         }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      int updatedPoints = data['new_points'];
-
-      setState(() {
-        userPoints = updatedPoints;
-      });
-
-      // Simpan log aktivitas
-      await ActivityLogHelper.saveLog(productName, price);
-
-      // Navigasi ke halaman sukses dengan detail produk
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PoinRedeemSuccessPage(
-            productName: productName,
-            pointsUsed: price,
-            currentDate: DateTime.now(),
-          ),
-        ),
       );
-    } else {
-      throw Exception(json.decode(response.body)['message']);
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${e.toString()}')),
-    );
-  }
-}
 
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        int updatedPoints = data['new_points'];
+
+        setState(() {
+          userPoints = updatedPoints;
+        });
+
+        // Simpan log aktivitas
+        await ActivityLogHelper.saveLog(productName, price);
+
+        // Navigasi ke halaman sukses dengan detail produk
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PoinRedeemSuccessPage(
+              productName: productName,
+              pointsUsed: price,
+              currentDate: DateTime.now(),
+            ),
+          ),
+        );
+      } else {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,19 +158,36 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
                         title: 'Minyak Goreng',
                         price: 500,
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => ConfirmChangesProduct(
-                              title: 'Minyak Goreng',
-                              imageUrl: 'assets/img_cooking_oil.png',
-                              price: 500,
-                              onConfirm: (int totalItems) {
-                                int totalPrice =
-                                    totalItems * 500; // Hitung total poin
-                                redeemPoints(totalPrice, 'Minyak Goreng');
-                              },
-                            ),
-                          );
+                          if (userPoints < 500) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Poin Anda tidak mencukupi untuk menukar item ini.')),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ConfirmChangesProduct(
+                                title: 'Minyak Goreng',
+                                imageUrl: 'assets/img_cooking_oil.png',
+                                price: 500,
+                                onConfirm: (int totalItems) {
+                                  int totalPrice = totalItems * 500;
+                                  if (userPoints < totalPrice) {
+                                    Navigator.pop(
+                                        context); // Tutup dialog jika poin tidak mencukupi
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Poin Anda tidak mencukupi untuk jumlah item ini.')),
+                                    );
+                                  } else {
+                                    redeemPoints(totalPrice, 'Minyak Goreng');
+                                  }
+                                }, // Hitung total poin
+                              ),
+                            );
+                          }
                         },
                       ),
                       RedeemPoinItem(
@@ -179,19 +195,37 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
                         title: 'Gula',
                         price: 200,
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => ConfirmChangesProduct(
-                              title: 'Gula',
-                              imageUrl: 'assets/img_sugar.png',
-                              price: 200,
-                              onConfirm: (int totalItems) {
-                                int totalPrice =
-                                    totalItems * 200; // Hitung total poin
-                                redeemPoints(totalPrice, 'Gula');
-                              },
-                            ),
-                          );
+                          if (userPoints < 200) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Poin Anda tidak mencukupi untuk menukar item ini.')),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ConfirmChangesProduct(
+                                title: 'Gula',
+                                imageUrl: 'assets/img_sugar.png',
+                                price: 200,
+                                onConfirm: (int totalItems) {
+                                  int totalPrice = totalItems * 200;
+                                  // Hitung total poin
+                                  if (userPoints < totalPrice) {
+                                    Navigator.pop(
+                                        context); // Tutup dialog jika poin tidak mencukupi
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Poin Anda tidak mencukupi untuk jumlah item ini.')),
+                                    );
+                                  } else {
+                                    redeemPoints(totalPrice, 'Gula');
+                                  }
+                                },
+                              ),
+                            );
+                          }
                         },
                       ),
                       // Tambahkan item lainnya
@@ -203,5 +237,3 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
     );
   }
 }
-
-
