@@ -33,7 +33,11 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
+        print('Token yang disimpan: ${data['access_token']}');
+        await prefs.setString('token', data['access_token']);
 
+        // Debugging: Log token
+        print('Token yang diterima: ${data['access_token']}');
         // Simpan token JWT ke SharedPreferences
         await prefs.setString('token', data['access_token']);
 

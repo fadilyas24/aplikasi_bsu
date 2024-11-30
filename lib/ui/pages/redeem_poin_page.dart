@@ -35,7 +35,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://10.60.40.27:5000/user-sessions'),
+        Uri.parse('http://192.168.1.9:5000/user-sessions'),
         headers: {
           'Authorization': 'Bearer $token',
         },

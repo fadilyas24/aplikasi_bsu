@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:aplikasi_bsu/ui/pages/admin_user_data.dart';
 import 'package:aplikasi_bsu/ui/widget/admin_user_card.dart';
 import 'package:aplikasi_bsu/ui/widget/forms.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,8 @@ class _AdminManageUserState extends State<AdminManageUser> {
 
   Future<void> _fetchUsers() async {
     try {
-      String? token = await getToken();
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token == null) throw Exception('Token is missing');
 
       final response = await http.get(
@@ -87,17 +89,9 @@ class _AdminManageUserState extends State<AdminManageUser> {
         final List<dynamic> userList = jsonDecode(response.body);
         setState(() {
           _users = userList;
-          filteredUsers =
-              userList; // Inisialisasi daftar pengguna yang ditampilkan
+          filteredUsers = userList;
           _isLoading = false;
         });
-      } else if (response.statusCode == 401) {
-        setState(() {
-          _errorMessage = 'Sesi Anda telah berakhir. Silakan login kembali.';
-        });
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove('token');
-        Navigator.pushReplacementNamed(context, '/');
       } else {
         setState(() {
           _errorMessage = 'Gagal memuat data pengguna.';
@@ -133,32 +127,38 @@ class _AdminManageUserState extends State<AdminManageUser> {
       appBar: AppBar(
         title: const Text('Kelola Nasabah'),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: edge),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _errorMessage.isNotEmpty
-                ? Center(child: Text(_errorMessage))
-                : ListView(
-                    children: [
-                      const CustomFormField(
-                        title: '',
-                        formHintText: 'Cari Nasabah',
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage.isNotEmpty
+              ? Center(child: Text(_errorMessage))
+              : ListView(
+                  padding: EdgeInsets.symmetric(horizontal: edge),
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Cari Nasabah',
+                        border: OutlineInputBorder(),
                       ),
-                      const SizedBox(height: 20),
-                      ..._users.map((user) {
-                        return AdminUserCard(
-                          name: user['full_name'] ?? 'Nama tidak tersedia',
-                          email: user['email'] ?? 'Email tidak tersedia',
-                          onTap: () {
-                            // Navigasi ke detail user jika diperlukan
-                          },
-                        );
-                      }).toList(),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-      ),
+                      onChanged: _onSearch,
+                    ),
+                    const SizedBox(height: 20),
+                    ...filteredUsers.map((user) {
+                      return AdminUserCard(
+                        name: user['full_name'] ?? 'Nama tidak tersedia',
+                        email: user['email'] ?? 'Email tidak tersedia',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AdminUserData(userData: user),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ],
+                ),
     );
   }
 }
