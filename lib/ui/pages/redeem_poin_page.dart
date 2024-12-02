@@ -116,124 +116,128 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Tukar Poin'),
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Poin Anda:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          title: Text('Tukar Poin'),
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Poin Anda:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '$userPoints',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '$userPoints',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20, right: 10, left: 10),
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 20,
+                        childAspectRatio: 0.68,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: [
+                          RedeemPoinItem(
+                            imageUrl: 'assets/img_cooking_oil.png',
+                            title: 'Minyak Goreng',
+                            price: 500,
+                            onTap: () {
+                              if (userPoints < 500) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Poin Anda tidak mencukupi untuk menukar item ini.')),
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ConfirmChangesProduct(
+                                    title: 'Minyak Goreng',
+                                    imageUrl: 'assets/img_cooking_oil.png',
+                                    price: 500,
+                                    onConfirm: (int totalItems) {
+                                      int totalPrice = totalItems * 500;
+                                      if (userPoints < totalPrice) {
+                                        Navigator.pop(
+                                            context); // Tutup dialog jika poin tidak mencukupi
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Poin Anda tidak mencukupi untuk jumlah item ini.')),
+                                        );
+                                      } else {
+                                        redeemPoints(
+                                            totalPrice, 'Minyak Goreng');
+                                      }
+                                    }, // Hitung total poin
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                          RedeemPoinItem(
+                            imageUrl: 'assets/img_sugar.png',
+                            title: 'Gula',
+                            price: 200,
+                            onTap: () {
+                              if (userPoints < 200) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Poin Anda tidak mencukupi untuk menukar item ini.')),
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ConfirmChangesProduct(
+                                    title: 'Gula',
+                                    imageUrl: 'assets/img_sugar.png',
+                                    price: 200,
+                                    onConfirm: (int totalItems) {
+                                      int totalPrice = totalItems * 200;
+                                      // Hitung total poin
+                                      if (userPoints < totalPrice) {
+                                        Navigator.pop(
+                                            context); // Tutup dialog jika poin tidak mencukupi
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Poin Anda tidak mencukupi untuk jumlah item ini.')),
+                                        );
+                                      } else {
+                                        redeemPoints(totalPrice, 'Gula');
+                                      }
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                          // Tambahkan item lainnya
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: GridView.count(
-                    padding: EdgeInsets.only(
-                        top: 30, left: edge, right: edge, bottom: 50),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 0.68,
-                    shrinkWrap: true,
-                    children: [
-                      RedeemPoinItem(
-                        imageUrl: 'assets/img_cooking_oil.png',
-                        title: 'Minyak Goreng',
-                        price: 500,
-                        onTap: () {
-                          if (userPoints < 500) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'Poin Anda tidak mencukupi untuk menukar item ini.')),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (context) => ConfirmChangesProduct(
-                                title: 'Minyak Goreng',
-                                imageUrl: 'assets/img_cooking_oil.png',
-                                price: 500,
-                                onConfirm: (int totalItems) {
-                                  int totalPrice = totalItems * 500;
-                                  if (userPoints < totalPrice) {
-                                    Navigator.pop(
-                                        context); // Tutup dialog jika poin tidak mencukupi
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Poin Anda tidak mencukupi untuk jumlah item ini.')),
-                                    );
-                                  } else {
-                                    redeemPoints(totalPrice, 'Minyak Goreng');
-                                  }
-                                }, // Hitung total poin
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      RedeemPoinItem(
-                        imageUrl: 'assets/img_sugar.png',
-                        title: 'Gula',
-                        price: 200,
-                        onTap: () {
-                          if (userPoints < 200) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'Poin Anda tidak mencukupi untuk menukar item ini.')),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (context) => ConfirmChangesProduct(
-                                title: 'Gula',
-                                imageUrl: 'assets/img_sugar.png',
-                                price: 200,
-                                onConfirm: (int totalItems) {
-                                  int totalPrice = totalItems * 200;
-                                  // Hitung total poin
-                                  if (userPoints < totalPrice) {
-                                    Navigator.pop(
-                                        context); // Tutup dialog jika poin tidak mencukupi
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Poin Anda tidak mencukupi untuk jumlah item ini.')),
-                                    );
-                                  } else {
-                                    redeemPoints(totalPrice, 'Gula');
-                                  }
-                                },
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      // Tambahkan item lainnya
-                    ],
-                  ),
-                ),
-              ],
-            ),
-    );
+              ));
   }
 }

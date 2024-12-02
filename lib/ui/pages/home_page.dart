@@ -103,16 +103,20 @@ class _HomePageState extends State<HomePage> {
   Widget buildBalanceCard() {
     return Row(
       children: [
-        BalanceCard(
-          title: 'Poin Kamu',
-          balance: widget.points.toString(), // Gunakan poin dari parameter
-          imgUrl: 'assets/img_poin_balance.png',
+        Expanded(
+          child: BalanceCard(
+            title: 'Poin Kamu',
+            balance: widget.points.toString(),
+            imgUrl: 'assets/img_poin_balance.png',
+          ),
         ),
-        const Spacer(),
-        BalanceCard(
-          title: 'Voucher Kamu',
-          balance: widget.voucher.toString(),
-          imgUrl: 'assets/img_voucher_balance.png',
+        SizedBox(width: 16), // Tambahkan jarak antar kartu
+        Expanded(
+          child: BalanceCard(
+            title: 'Voucher Kamu',
+            balance: widget.voucher.toString(),
+            imgUrl: 'assets/img_voucher_balance.png',
+          ),
         ),
       ],
     );

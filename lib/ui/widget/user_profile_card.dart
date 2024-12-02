@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-import '../../shared/theme.dart';
+import 'package:flutter/material.dart';
 
 class UserProfileCard extends StatelessWidget {
   final String imgUrl;
@@ -18,55 +18,18 @@ class UserProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: whiteColor,
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50,
+          backgroundImage: imgUrl.startsWith('data:image')
+              ? MemoryImage(base64Decode(imgUrl.split(',')[1]))
+              : AssetImage(imgUrl) as ImageProvider,
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: blackTextStyle.copyWith(
-                      fontWeight: medium,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 2,
-                  ),
-                  Text(
-                    email,
-                    style: greyTextStyle.copyWith(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 55,
-              height: 55,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: AssetImage(
-                    imgUrl,
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
+        const SizedBox(height: 10),
+        Text(name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(email, style: TextStyle(fontSize: 16, color: Colors.grey)),
+      ],
     );
   }
 }
