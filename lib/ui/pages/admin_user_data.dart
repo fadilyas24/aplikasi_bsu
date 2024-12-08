@@ -61,7 +61,7 @@ class _AdminUserDataState extends State<AdminUserData> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/redeem-activities?user_id=$userId'),
+        Uri.parse('http://192.168.1.8:5000/redeem-activities?user_id=$userId'),
         headers: {
           'Authorization': 'Bearer $_userToken',
         },
@@ -74,6 +74,33 @@ class _AdminUserDataState extends State<AdminUserData> {
             .toList();
       } else {
         throw Exception('Gagal mengambil data riwayat penukaran');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan saat mengambil data: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSavingsActivities(
+      String userId) async {
+    if (_userToken == null) {
+      throw Exception('Token tidak ditemukan. Harap login ulang.');
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.8:5000/savings-activities?user_id=$userId'),
+        headers: {
+          'Authorization': 'Bearer $_userToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data
+            .map((activity) => Map<String, dynamic>.from(activity))
+            .toList();
+      } else {
+        throw Exception('Gagal mengambil data riwayat tabungan');
       }
     } catch (e) {
       throw Exception('Terjadi kesalahan saat mengambil data: $e');
@@ -140,7 +167,13 @@ class _AdminUserDataState extends State<AdminUserData> {
             elevation: 20,
             title: 'Tambah Catatan',
             onPressed: () {
-              Navigator.pushNamed(context, '/admin-add-savings');
+              Navigator.pushNamed(
+                context,
+                '/admin-add-savings',
+                arguments: {
+                  'userId': widget.userData['user_id'].toString()
+                }, // Gunakan widget.userData
+              );
             },
           ),
         ),
@@ -150,24 +183,44 @@ class _AdminUserDataState extends State<AdminUserData> {
   }
 
   Widget buildRiwayatTabungan() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.only(top: 10),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: whiteColor,
-      ),
-      child: const Column(
-        children: [
-          ActvityItem(
-            iconUrl: 'assets/i_activity_deposit.png',
-            title: 'Menabung Sampah',
-            time: 'Hari ini',
-            value: '+ 500',
+    if (_userToken == null) {
+      return Center(
+        child: Text('Memuat token...'),
+      );
+    }
+
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchSavingsActivities(widget.userData['user_id'].toString()),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Tidak ada riwayat tabungan'));
+        }
+
+        final activities = snapshot.data!;
+        return Container(
+          padding: EdgeInsets.all(16),
+          margin: EdgeInsets.only(top: 10),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: whiteColor,
           ),
-        ],
-      ),
+          child: Column(
+            children: activities.map((activity) {
+              return ActvityItem(
+                iconUrl: 'assets/i_activity_deposit.png',
+                title: activity['title'] ?? 'Menabung Sampah',
+                time: activity['time'] ?? 'Waktu tidak tersedia',
+                value: '+ ${activity['points'] ?? 0}',
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 

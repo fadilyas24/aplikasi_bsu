@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
 
-import '../../shared/theme.dart';
-import '../widget/buttons.dart';
+
 
 class AdminAddSavingsSuccessPage extends StatelessWidget {
   const AdminAddSavingsSuccessPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final String date = args['date'];
+    final List<Map<String, dynamic>> savings = List<Map<String, dynamic>>.from(args['savings']);
+    final double totalPoints = args['totalPoints'];
+
     return Scaffold(
       body: ListView(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: edge),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                SizedBox(
-                  height: 30,
-                ),
+                SizedBox(height: 30),
                 Text(
                   'Tambah Tabungan Berhasil',
-                  style: blackTextStyle.copyWith(
-                    fontSize: 20,
-                    fontWeight: semiBold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   width: 130,
                   height: 130,
@@ -38,18 +35,13 @@ class AdminAddSavingsSuccessPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 16,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: whiteColor,
+                    color: Colors.white,
                   ),
                   child: Column(
                     children: [
@@ -57,119 +49,58 @@ class AdminAddSavingsSuccessPage extends StatelessWidget {
                         children: [
                           Text(
                             'Rincian Tabungan',
-                            style: blackTextStyle.copyWith(
-                                fontSize: 14, fontWeight: bold),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           Spacer(),
                           Text(
-                            '31 Mei 2024',
-                            style: greyTextStyle.copyWith(
-                              fontSize: 14,
-                            ),
+                            date,
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Plastik',
-                            style: regularTextStyle.copyWith(fontSize: 14),
+                      SizedBox(height: 30),
+                      ...savings.map((item) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Row(
+                            children: [
+                              Text(
+                                item['name_trash'],
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Spacer(),
+                              Text(
+                                '${item['points'].toStringAsFixed(1)} Poin',
+                                style: TextStyle(fontSize: 14, color: Colors.blue),
+                              ),
+                            ],
                           ),
-                          Spacer(),
-                          Text(
-                            '10 Poin',
-                            style: blueTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Kertas',
-                            style: regularTextStyle.copyWith(fontSize: 14),
-                          ),
-                          Spacer(),
-                          Text(
-                            '30 Poin',
-                            style: blueTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Minyak Jelantah',
-                            style: regularTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
-                          ),
-                          Spacer(),
-                          Text(
-                            '0 Poin',
-                            style: blueTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Kaca',
-                            style: regularTextStyle.copyWith(fontSize: 14),
-                          ),
-                          Spacer(),
-                          Text(
-                            '0 Poin',
-                            style: blueTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
+                        );
+                      }).toList(),
+                      SizedBox(height: 30),
                       Row(
                         children: [
                           Text(
                             'Total',
-                            style: blackTextStyle.copyWith(
-                              fontSize: 14,
-                              fontWeight: bold,
-                            ),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           Spacer(),
                           Text(
-                            '40 Poin',
-                            style: blueTextStyle.copyWith(
-                                fontSize: 14, fontWeight: medium),
+                            '${totalPoints.toStringAsFixed(1)} Poin',
+                            style: TextStyle(fontSize: 14, color: Colors.blue),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 130,
-                ),
-                CustomFilledButton(
-                  title: 'Kembali ke Beranda',
+                SizedBox(height: 130),
+                ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
                         context, '/main-admin', (route) => false);
                   },
+                  child: Text('Kembali ke Beranda'),
                 ),
               ],
             ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:aplikasi_bsu/ui/pages/admin_user_data.dart';
 import 'package:aplikasi_bsu/ui/widget/admin_user_card.dart';
-import 'package:aplikasi_bsu/ui/widget/forms.dart';
+// import 'package:aplikasi_bsu/ui/widget/forms.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,7 +48,7 @@ class _AdminManageUserState extends State<AdminManageUser> {
 
       // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/admin/profile'),
+        Uri.parse('http://192.168.1.8:5000/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token', // Sertakan token JWT di header
@@ -81,7 +81,7 @@ class _AdminManageUserState extends State<AdminManageUser> {
       if (token == null) throw Exception('Token is missing');
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/users'),
+        Uri.parse('http://192.168.1.8:5000/users'),
         headers: {'Authorization': 'Bearer $token'},
       );
 

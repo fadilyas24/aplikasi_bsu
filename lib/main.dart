@@ -68,10 +68,16 @@ class MyApp extends StatelessWidget {
         '/main-admin': (context) => MainAdmin(),
         '/admin-manage-user': (context) => AdminManageUser(),
         '/admin-user-data': (context) {
-          final userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          final userData = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
           return AdminUserData(userData: userData);
         },
-        '/admin-add-savings': (context) => AdminAddSavings(),
+        '/admin-add-savings': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return AdminAddSavings(
+              userId: args['userId']); // Mengambil userId dari arguments
+        },
         '/admin-add-savings-success': (context) => AdminAddSavingsSuccessPage(),
         '/admin-profile': (context) => AdminProfilePage(),
         '/change-password': (context) => ChangePasswordScreen(),

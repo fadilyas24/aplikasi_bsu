@@ -3,7 +3,6 @@ import 'package:aplikasi_bsu/helpers/activity_log_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../shared/theme.dart';
 import '../widget/redeem_point_item.dart';
 import 'poin_redeem_success_page.dart';
 import 'package:aplikasi_bsu/ui/widget/product_confirm_alert.dart';
@@ -35,7 +34,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/user-sessions'),
+        Uri.parse('http://192.168.1.8:5000/user-sessions'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -70,7 +69,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.post(
-        Uri.parse('http://192.168.1.9:5000/redeem-points'),
+        Uri.parse('http://192.168.1.8:5000/redeem-points'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

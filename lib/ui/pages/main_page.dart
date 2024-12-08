@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
       try {
         final response = await http.get(
           Uri.parse(
-              'http://192.168.1.9:5000/user-sessions'), // Ganti URL dengan API Anda
+              'http://192.168.1.8:5000/user-sessions'), // Ganti URL dengan API Anda
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -80,7 +80,7 @@ class _MainPageState extends State<MainPage> {
 
       final response = await http.get(
         Uri.parse(
-            'http://192.168.1.9:5000/redeem-activities'), // URL API untuk log aktivitas
+            'http://192.168.1.8:5000/redeem-activities'), // URL API untuk log aktivitas
         headers: {
           'Authorization': 'Bearer $token',
         },

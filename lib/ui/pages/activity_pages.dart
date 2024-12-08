@@ -31,7 +31,7 @@ class _ActivityPageState extends State<ActivityPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/redeem-activities'),
+        Uri.parse('http://192.168.1.8:5000/redeem-activities'),
         headers: {
           'Authorization': 'Bearer $token',
         },

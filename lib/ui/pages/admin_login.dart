@@ -22,7 +22,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.9:5000/admin/login'),
+        Uri.parse('http://192.168.1.8:5000/admin/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': _usernameController.text,

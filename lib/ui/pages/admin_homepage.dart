@@ -1,3 +1,4 @@
+import 'package:aplikasi_bsu/ui/pages/admin_view_trash_data.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -45,7 +46,7 @@ class _MainAdminState extends State<MainAdmin> {
 
       // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://192.168.1.9:5000/admin/profile'),
+        Uri.parse('http://192.168.1.8:5000/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token', // Sertakan token JWT di header
@@ -70,8 +71,6 @@ class _MainAdminState extends State<MainAdmin> {
       });
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +184,12 @@ class _MainAdminState extends State<MainAdmin> {
                 AdminMenuCard(
                   title: 'Lihat Data Sampah',
                   iconUrl: 'assets/i_trashbag.png',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TrashPage()),
+                    );
+                  },
                 ),
                 AdminMenuCard(
                   title: 'Kelola Stok Produk',
