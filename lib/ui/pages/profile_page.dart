@@ -32,8 +32,7 @@
 //     if (token != null) {
 //       try {
 //         final response = await http.get(
-//           Uri.parse(
-//               'http://192.168.1.9:5000/user-sessions'), // Ganti dengan URL API Anda
+//           Uri.parse('http://10.60.66.62:5000/user-sessions'),
 //           headers: {
 //             'Authorization': 'Bearer $token',
 //           },
@@ -117,7 +116,8 @@
 //                   child: Column(
 //                     children: [
 //                       UserProfileCard(
-//                         imgUrl: 'assets/img_profile.png',
+//                         imgUrl: userProfile?['profile_picture_url'] ??
+//                             'assets/img_profile.png', // Ambil URL gambar dari API
 //                         name:
 //                             userProfile?['full_name'] ?? 'Nama tidak ditemukan',
 //                         email: userProfile?['email'] ?? 'Email tidak ditemukan',
@@ -218,7 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (token != null) {
       try {
         final response = await http.get(
-          Uri.parse('http://192.168.1.8:5000/user-sessions'),
+          Uri.parse('http://10.60.66.62:5000/user-sessions'),
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -270,6 +270,44 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> logoutUser(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
+
+    // Tampilkan animasi pop-up
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: Colors.blue,
+                size: 60,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Logout Berhasil',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text('Anda telah keluar dari akun Anda.'),
+            ],
+          ),
+        );
+      },
+    );
+
+    // Tunggu beberapa detik sebelum mengarahkan ke halaman login
+    await Future.delayed(Duration(seconds: 2));
+
+    Navigator.of(context).pop(); // Tutup dialog
 
     // Arahkan pengguna kembali ke halaman login
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);

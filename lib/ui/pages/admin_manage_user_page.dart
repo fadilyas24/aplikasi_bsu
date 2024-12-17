@@ -48,7 +48,7 @@ class _AdminManageUserState extends State<AdminManageUser> {
 
       // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/admin/profile'),
+        Uri.parse('http://10.60.40.104:5000/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token', // Sertakan token JWT di header
@@ -81,7 +81,7 @@ class _AdminManageUserState extends State<AdminManageUser> {
       if (token == null) throw Exception('Token is missing');
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/users'),
+        Uri.parse('http://10.60.40.104:5000/users'),
         headers: {'Authorization': 'Bearer $token'},
       );
 

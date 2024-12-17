@@ -34,7 +34,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/user-sessions'),
+        Uri.parse('http://10.60.66.62:5000/user-sessions'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -69,7 +69,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/redeem-points'),
+        Uri.parse('http://10.60.66.62:5000/redeem-points'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

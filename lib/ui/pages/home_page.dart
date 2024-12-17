@@ -235,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           children: [
-                            Icon(Icons.card_giftcard, color: Colors.purple),
+                            Icon(Icons.card_giftcard, color: Colors.blue),
                             SizedBox(width: 10),
                             Expanded(
                               child: Column(

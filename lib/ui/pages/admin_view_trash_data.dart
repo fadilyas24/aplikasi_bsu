@@ -25,7 +25,7 @@ class _TrashPageState extends State<TrashPage> {
   Future<void> _fetchTrashData() async {
     try {
       final response =
-          await http.get(Uri.parse('http://192.168.1.8:5000/trash'));
+          await http.get(Uri.parse('http://10.60.40.104:5000/trash'));
       if (response.statusCode == 200) {
         setState(() {
           trashList = json.decode(response.body);
@@ -48,7 +48,7 @@ class _TrashPageState extends State<TrashPage> {
   Future<void> _addTrash() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/trash'),
+        Uri.parse('http://10.60.40.104:5000/trash'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'name_trash': _nameController.text,

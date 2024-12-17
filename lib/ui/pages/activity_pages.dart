@@ -25,29 +25,50 @@ class _ActivityPageState extends State<ActivityPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('jwt_token');
+      String? userId =
+          prefs.getString('user_id'); // Ambil user_id dari SharedPreferences
 
-      if (token == null) {
-        throw Exception('Token is missing');
+      if (token == null || userId == null) {
+        throw Exception('Token or User ID is missing');
       }
 
-      final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/redeem-activities'),
+      // Fetch redeem activities
+      final redeemResponse = await http.get(
+        Uri.parse('http://10.60.66.62:5000/redeem-activities'),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> logs = json.decode(response.body);
+      // Fetch savings activities
+      final savingsResponse = await http.get(
+        Uri.parse('http://10.60.66.62:5000/savings-activities?user_id=$userId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (redeemResponse.statusCode == 200 &&
+          savingsResponse.statusCode == 200) {
+        final List<dynamic> redeemLogs = json.decode(redeemResponse.body);
+        final List<dynamic> savingsLogs = json.decode(savingsResponse.body);
+
         setState(() {
-          activityLogs = logs
-              .map((log) => {
-                    'title': log['title'],
-                    'productName': log['product_name'],
-                    'pointsUsed': log['redeemed_points'],
-                    'date': log['time'],
-                  })
-              .toList();
+          activityLogs = [
+            ...redeemLogs.map((log) => {
+                  'type': 'redeem',
+                  'title': log['title'],
+                  'productName': log['product_name'],
+                  'points': log['redeemed_points'],
+                  'date': log['time'],
+                }),
+            ...savingsLogs.map((log) => {
+                  'type': 'savings',
+                  'title': log['title'],
+                  'points': log['points'],
+                  'date': log['time'],
+                }),
+          ];
           isLoading = false;
         });
       } else {
@@ -82,9 +103,9 @@ class _ActivityPageState extends State<ActivityPage> {
                   itemCount: activityLogs.length,
                   itemBuilder: (context, index) {
                     final log = activityLogs[index];
+                    final type = log['type'];
                     final title = log['title'];
-                    final productName = log['productName'];
-                    final pointsUsed = log['pointsUsed'];
+                    final points = log['points'];
                     final date = DateTime.parse(log['date']);
 
                     return Padding(
@@ -96,11 +117,19 @@ class _ActivityPageState extends State<ActivityPage> {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: Colors.purple[50],
+                              color: type == 'redeem'
+                                  ? Colors.blue[50]
+                                  : Colors.blue[50],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(Icons.card_giftcard,
-                                color: Colors.purple, size: 28),
+                            child: Icon(
+                              type == 'redeem'
+                                  ? Icons.card_giftcard
+                                  : Icons.savings,
+                              color:
+                                  type == 'redeem' ? Colors.blue : Colors.blue,
+                              size: 28,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -113,10 +142,11 @@ class _ActivityPageState extends State<ActivityPage> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                Text(
-                                  productName,
-                                  style: greyTextStyle.copyWith(fontSize: 14),
-                                ),
+                                if (type == 'redeem')
+                                  Text(
+                                    log['productName'],
+                                    style: greyTextStyle.copyWith(fontSize: 14),
+                                  ),
                                 const SizedBox(height: 4),
                                 Text(
                                   '${date.day} ${_getMonthName(date.month)} ${date.year}',
@@ -126,9 +156,12 @@ class _ActivityPageState extends State<ActivityPage> {
                             ),
                           ),
                           Text(
-                            '-$pointsUsed Poin',
-                            style: blueTextStyle.copyWith(
-                                fontSize: 14, fontWeight: FontWeight.bold),
+                            '${type == 'redeem' ? '-' : '+'}$points Poin',
+                            style: type == 'redeem'
+                                ? blueTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: FontWeight.bold)
+                                : blueTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

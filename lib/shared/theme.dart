@@ -15,6 +15,11 @@ Color numberBackgroundColor = const Color(0xff1A1D2E);
 
 double edge = 16;
 
+TextStyle greenTextStyle = GoogleFonts.poppins(
+  color: Colors.green,
+  fontWeight: FontWeight.w500,
+);
+
 TextStyle blackTextStyle = GoogleFonts.poppins(
   fontWeight: FontWeight.w500,
   color: blackColor,
