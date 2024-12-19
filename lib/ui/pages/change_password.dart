@@ -144,7 +144,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://10.60.40.104:5000/user/change-password');
+    final url = Uri.parse('http://10.60.64.39:5000/user/change-password');
     final response = await http.put(
       url,
       headers: {

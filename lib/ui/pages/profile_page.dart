@@ -32,7 +32,7 @@
 //     if (token != null) {
 //       try {
 //         final response = await http.get(
-//           Uri.parse('http://10.60.66.62:5000/user-sessions'),
+//           Uri.parse('http://10.60.64.39:5000/user-sessions'),
 //           headers: {
 //             'Authorization': 'Bearer $token',
 //           },
@@ -218,7 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (token != null) {
       try {
         final response = await http.get(
-          Uri.parse('http://10.60.66.62:5000/user-sessions'),
+          Uri.parse('http://10.60.64.39:5000/user-sessions'),
           headers: {
             'Authorization': 'Bearer $token',
           },

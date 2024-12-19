@@ -61,7 +61,7 @@ class _AdminUserDataState extends State<AdminUserData> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.60.40.104:5000/redeem-activities?user_id=$userId'),
+        Uri.parse('http://10.60.64.39:5000/redeem-activities?user_id=$userId'),
         headers: {
           'Authorization': 'Bearer $_userToken',
         },
@@ -88,7 +88,7 @@ class _AdminUserDataState extends State<AdminUserData> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.60.40.104:5000/savings-activities?user_id=$userId'),
+        Uri.parse('http://10.60.64.39:5000/savings-activities?user_id=$userId'),
         headers: {
           'Authorization': 'Bearer $_userToken',
         },

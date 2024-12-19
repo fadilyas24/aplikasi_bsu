@@ -54,13 +54,14 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.60.40.104:5000/trash'),
+        Uri.parse('http://10.60.64.39:5000/trash'),
         headers: {'Authorization': 'Bearer $_userToken'},
       );
 
       if (response.statusCode == 200) {
         setState(() {
-          _trashList = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+          _trashList =
+              List<Map<String, dynamic>>.from(jsonDecode(response.body));
           _isLoading = false;
         });
       } else {
@@ -79,7 +80,8 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
   // Fungsi untuk menghitung total poin berdasarkan berat input
   double _calculatePoints(int idTrash, double weight) {
-    final trash = _trashList.firstWhere((item) => item['id_trash'] == idTrash, orElse: () => {});
+    final trash = _trashList.firstWhere((item) => item['id_trash'] == idTrash,
+        orElse: () => {});
     if (trash.isNotEmpty) {
       double pointPerKg = trash['point_trash']?.toDouble() ?? 0.0;
       return weight * pointPerKg;
@@ -98,60 +100,60 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
   // Fungsi untuk mengirim data ke backend
   Future<void> _submitSavings() async {
-  if (_userToken == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Token tidak ditemukan. Harap login ulang.')),
-    );
-    return;
-  }
-
-  final savingsData = _inputWeights.entries.map((entry) {
-    final idTrash = entry.key;
-    final weight = entry.value;
-    final points = _calculatePoints(int.parse(idTrash), weight);
-    return {
-      "name_trash": _trashList.firstWhere((trash) => trash['id_trash'].toString() == idTrash)['name_trash'],
-      "weight": weight,
-      "points": points,
-    };
-  }).toList();
-
-  final requestBody = {
-    "user_id": widget.userId,
-    "total_points": _calculateTotalPoints(),
-    "savings": savingsData,
-  };
-
-  try {
-    final response = await http.post(
-      Uri.parse('http://10.60.40.104:5000/add-savings'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_userToken',
-      },
-      body: jsonEncode(requestBody),
-    );
-
-    if (response.statusCode == 200) {
-      Navigator.pushNamed(
-        context,
-        '/admin-add-savings-success',
-        arguments: {
-          'date': DateTime.now().toString(),
-          'savings': savingsData,
-          'totalPoints': _calculateTotalPoints(),
-        },
+    if (_userToken == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Token tidak ditemukan. Harap login ulang.')),
       );
-    } else {
-      throw Exception('Gagal menyimpan tabungan');
+      return;
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Terjadi kesalahan: $e')),
-    );
-  }
-}
 
+    final savingsData = _inputWeights.entries.map((entry) {
+      final idTrash = entry.key;
+      final weight = entry.value;
+      final points = _calculatePoints(int.parse(idTrash), weight);
+      return {
+        "name_trash": _trashList.firstWhere(
+            (trash) => trash['id_trash'].toString() == idTrash)['name_trash'],
+        "weight": weight,
+        "points": points,
+      };
+    }).toList();
+
+    final requestBody = {
+      "user_id": widget.userId,
+      "total_points": _calculateTotalPoints(),
+      "savings": savingsData,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.60.64.39:5000/add-savings'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_userToken',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pushNamed(
+          context,
+          '/admin-add-savings-success',
+          arguments: {
+            'date': DateTime.now().toString(),
+            'savings': savingsData,
+            'totalPoints': _calculateTotalPoints(),
+          },
+        );
+      } else {
+        throw Exception('Gagal menyimpan tabungan');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +171,8 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
                       child: ListTile(
                         leading: Icon(Icons.recycling),
                         title: Text(trash['name_trash']),
-                        subtitle: Text('Poin per kg: ${trash['point_trash']}'),
+                        subtitle:
+                            Text('Poin per kg/pcs: ${trash['point_trash']}'),
                         trailing: SizedBox(
                           width: 120,
                           child: Row(
@@ -178,11 +181,12 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
                                 child: TextField(
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
-                                    hintText: 'Berat (kg)',
+                                    hintText: 'Berat (kg/pcs)',
                                   ),
                                   onChanged: (value) {
                                     setState(() {
-                                      _inputWeights[idTrash] = double.tryParse(value) ?? 0.0;
+                                      _inputWeights[idTrash] =
+                                          double.tryParse(value) ?? 0.0;
                                     });
                                   },
                                 ),

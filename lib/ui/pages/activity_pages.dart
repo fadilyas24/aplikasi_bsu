@@ -34,7 +34,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
       // Fetch redeem activities
       final redeemResponse = await http.get(
-        Uri.parse('http://10.60.66.62:5000/redeem-activities'),
+        Uri.parse('http://10.60.64.39:5000/redeem-activities'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -42,7 +42,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
       // Fetch savings activities
       final savingsResponse = await http.get(
-        Uri.parse('http://10.60.66.62:5000/savings-activities?user_id=$userId'),
+        Uri.parse('http://10.60.64.39:5000/savings-activities?user_id=$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
