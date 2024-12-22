@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
       try {
         final response = await http.get(
           Uri.parse(
-              'http://10.60.64.39:5000/user-sessions'), // Ganti URL dengan API Anda
+              'http://192.168.1.8:5000/user-sessions'), // Ganti URL dengan API Anda
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -74,37 +74,51 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> fetchActivityLogs() async {
-    try {
-      String? token = await getToken();
-      if (token == null) throw Exception('Token is missing');
+  try {
+    String? token = await getToken();
+    if (token == null) throw Exception('Token is missing');
 
-      final response = await http.get(
-        Uri.parse(
-            'http://10.60.64.39:5000/redeem-activities'), // URL API untuk log aktivitas
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
+    // Fetch Redeem Activities
+    final redeemResponse = await http.get(
+      Uri.parse('http://192.168.1.8:5000/redeem-activities'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> logs = json.decode(response.body);
-        setState(() {
-          activityLogs = logs
-              .map((log) => {
-                    'title': log['title'],
-                    'productName': log['product_name'],
-                    'pointsUsed': log['redeemed_points'],
-                    'date': log['time'],
-                  })
-              .toList();
-        });
-      } else {
-        throw Exception('Failed to fetch activity logs');
-      }
-    } catch (e) {
-      print('Error fetching logs: $e');
+    // Fetch Savings Activities
+    final savingsResponse = await http.get(
+      Uri.parse('http://192.168.1.8:5000/savings-activities?user_id=${userProfile?['user_id']}'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (redeemResponse.statusCode == 200 && savingsResponse.statusCode == 200) {
+      final List<dynamic> redeemLogs = json.decode(redeemResponse.body);
+      final List<dynamic> savingsLogs = json.decode(savingsResponse.body);
+
+      // Combine Redeem and Savings Activities
+      setState(() {
+        activityLogs = [
+          ...redeemLogs.map((log) => {
+                'title': log['title'],
+                'productName': log['product_name'] ?? '-',
+                'pointsUsed': log['redeemed_points'],
+                'date': log['time'],
+              }),
+          ...savingsLogs.map((log) => {
+                'title': log['title'],
+                'productName': 'Menabung',
+                'pointsUsed': log['points'],
+                'date': log['time'],
+              }),
+        ];
+      });
+    } else {
+      throw Exception('Failed to fetch activity logs');
     }
+  } catch (e) {
+    print('Error fetching logs: $e');
   }
+}
+
 
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

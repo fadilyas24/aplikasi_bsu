@@ -183,10 +183,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildActivity() {
+    // Mengurutkan data berdasarkan waktu terbaru
+    List<Map<String, dynamic>> sortedActivityLogs =
+        List.from(widget.activityLogs)
+          ..sort((a, b) =>
+              DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
+
+    // Membatasi hanya 5 data terbaru
+    List<Map<String, dynamic>> recentActivityLogs =
+        sortedActivityLogs.take(5).toList();
+
     return Container(
-      margin: EdgeInsets.only(
-        top: 20,
-      ),
+      margin: EdgeInsets.only(top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -219,23 +227,28 @@ class _HomePageState extends State<HomePage> {
           ),
           Container(
             padding: EdgeInsets.all(16),
-            margin: EdgeInsets.only(
-              top: 10,
-            ),
+            margin: EdgeInsets.only(top: 10),
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: whiteColor,
             ),
             child: Column(
-              children: widget.activityLogs.isNotEmpty
-                  ? widget.activityLogs.map((log) {
+              children: recentActivityLogs.isNotEmpty
+                  ? recentActivityLogs.map<Widget>((log) {
                       final date = DateTime.parse(log['date']);
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           children: [
-                            Icon(Icons.card_giftcard, color: Colors.blue),
+                            Icon(
+                              log['productName'] == 'Menabung'
+                                  ? Icons.savings
+                                  : Icons.card_giftcard,
+                              color: log['productName'] == 'Menabung'
+                                  ? Colors.blue
+                                  : Colors.blue,
+                            ),
                             SizedBox(width: 10),
                             Expanded(
                               child: Column(
@@ -260,10 +273,15 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             Text(
-                              '-${log['pointsUsed']} Poin',
-                              style: blueTextStyle.copyWith(
+                              log['productName'] == 'Menabung'
+                                  ? '+${log['pointsUsed']} Poin'
+                                  : '-${log['pointsUsed']} Poin',
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
+                                color: log['productName'] == 'Menabung'
+                                    ? Colors.blue
+                                    : Colors.blue,
                               ),
                             ),
                           ],
@@ -274,7 +292,7 @@ class _HomePageState extends State<HomePage> {
                       Text(
                         'Belum ada aktivitas.',
                         style: greyTextStyle.copyWith(fontSize: 14),
-                      )
+                      ),
                     ],
             ),
           ),

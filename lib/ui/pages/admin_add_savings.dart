@@ -54,7 +54,7 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.60.64.39:5000/trash'),
+        Uri.parse('http://192.168.1.8:5000/trash'),
         headers: {'Authorization': 'Bearer $_userToken'},
       );
 
@@ -127,7 +127,7 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.60.64.39:5000/add-savings'),
+        Uri.parse('http://192.168.1.8:5000/add-savings'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_userToken',

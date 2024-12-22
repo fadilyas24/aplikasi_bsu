@@ -34,7 +34,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
       // Fetch redeem activities
       final redeemResponse = await http.get(
-        Uri.parse('http://10.60.64.39:5000/redeem-activities'),
+        Uri.parse('http://192.168.1.8:5000/redeem-activities'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -42,7 +42,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
       // Fetch savings activities
       final savingsResponse = await http.get(
-        Uri.parse('http://10.60.64.39:5000/savings-activities?user_id=$userId'),
+        Uri.parse('http://192.168.1.8:5000/savings-activities?user_id=$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -54,6 +54,7 @@ class _ActivityPageState extends State<ActivityPage> {
         final List<dynamic> savingsLogs = json.decode(savingsResponse.body);
 
         setState(() {
+          // Menggabungkan dan mengurutkan log berdasarkan tanggal terbaru
           activityLogs = [
             ...redeemLogs.map((log) => {
                   'type': 'redeem',
@@ -69,6 +70,10 @@ class _ActivityPageState extends State<ActivityPage> {
                   'date': log['time'],
                 }),
           ];
+
+          // Urutkan log berdasarkan tanggal terbaru
+          activityLogs.sort((a, b) =>
+              DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
           isLoading = false;
         });
       } else {
