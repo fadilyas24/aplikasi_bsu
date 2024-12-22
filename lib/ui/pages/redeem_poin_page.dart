@@ -16,12 +16,15 @@ class RedeemPointPage extends StatefulWidget {
 
 class _RedeemPointPageState extends State<RedeemPointPage> {
   int userPoints = 0;
-  bool isLoading = true;
+  bool isLoadingUser = true;
+  bool isLoadingProducts = true;
+  List<Map<String, dynamic>> products = [];
 
   @override
   void initState() {
     super.initState();
     fetchUserDetails();
+    fetchProducts();
   }
 
   Future<void> fetchUserDetails() async {
@@ -44,14 +47,42 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
         final data = json.decode(response.body);
         setState(() {
           userPoints = data['points'];
-          isLoading = false;
+          isLoadingUser = false;
         });
       } else {
         throw Exception('Failed to fetch user details');
       }
     } catch (e) {
       setState(() {
-        isLoading = false;
+        isLoadingUser = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> fetchProducts() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.8:5000/products'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as List;
+        setState(() {
+          products = data.map((e) => e as Map<String, dynamic>).toList();
+          isLoadingProducts = false;
+        });
+      } else {
+        throw Exception('Failed to fetch products');
+      }
+    } catch (e) {
+      setState(() {
+        isLoadingProducts = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -115,128 +146,97 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Tukar Poin'),
-        ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Poin Anda:',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '$userPoints',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue),
-                          ),
-                        ],
-                      ),
+      appBar: AppBar(
+        title: Text('Tukar Poin'),
+      ),
+      body: isLoadingUser || isLoadingProducts
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Poin Anda:',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '$userPoints',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20, right: 10, left: 10),
-                      child: GridView.count(
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20, right: 10, left: 10),
+                    child: GridView.builder(
+                      padding: EdgeInsets.all(10),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 20,
                         childAspectRatio: 0.68,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          RedeemPoinItem(
-                            imageUrl: 'assets/img_cooking_oil.png',
-                            title: 'Minyak Goreng',
-                            price: 500,
-                            onTap: () {
-                              if (userPoints < 500) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Poin Anda tidak mencukupi untuk menukar item ini.')),
-                                );
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => ConfirmChangesProduct(
-                                    title: 'Minyak Goreng',
-                                    imageUrl: 'assets/img_cooking_oil.png',
-                                    price: 500,
-                                    onConfirm: (int totalItems) {
-                                      int totalPrice = totalItems * 500;
-                                      if (userPoints < totalPrice) {
-                                        Navigator.pop(
-                                            context); // Tutup dialog jika poin tidak mencukupi
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Poin Anda tidak mencukupi untuk jumlah item ini.')),
-                                        );
-                                      } else {
-                                        redeemPoints(
-                                            totalPrice, 'Minyak Goreng');
-                                      }
-                                    }, // Hitung total poin
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                          RedeemPoinItem(
-                            imageUrl: 'assets/img_sugar.png',
-                            title: 'Gula',
-                            price: 200,
-                            onTap: () {
-                              if (userPoints < 200) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Poin Anda tidak mencukupi untuk menukar item ini.')),
-                                );
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => ConfirmChangesProduct(
-                                    title: 'Gula',
-                                    imageUrl: 'assets/img_sugar.png',
-                                    price: 200,
-                                    onConfirm: (int totalItems) {
-                                      int totalPrice = totalItems * 200;
-                                      // Hitung total poin
-                                      if (userPoints < totalPrice) {
-                                        Navigator.pop(
-                                            context); // Tutup dialog jika poin tidak mencukupi
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Poin Anda tidak mencukupi untuk jumlah item ini.')),
-                                        );
-                                      } else {
-                                        redeemPoints(totalPrice, 'Gula');
-                                      }
-                                    },
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                          // Tambahkan item lainnya
-                        ],
                       ),
+                      itemCount: products.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return RedeemPoinItem(
+                          imageUrl:
+                              'assets/${product['product_name'].toLowerCase()}.png',
+                          title: product['product_name'],
+                          price: product['points'],
+                          onTap: () {
+                            if (userPoints < product['points']) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Poin Anda tidak mencukupi untuk menukar item ini.')),
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ConfirmChangesProduct(
+                                  title: product['product_name'],
+                                  imageUrl:
+                                      'assets/${product['product_name'].toLowerCase()}.png',
+                                  price: product['points'],
+                                  onConfirm: (int totalItems) {
+                                    int totalPrice =
+                                        totalItems * (product['points'] as int);
+                                    if (userPoints < totalPrice) {
+                                      Navigator.pop(
+                                          context); // Tutup dialog jika poin tidak mencukupi
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Poin Anda tidak mencukupi untuk jumlah item ini.')),
+                                      );
+                                    } else {
+                                      redeemPoints(
+                                          totalPrice, product['product_name']);
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      },
                     ),
-                  ],
-                ),
-              ));
+                  ),
+                ],
+              ),
+            ),
+    );
   }
 }

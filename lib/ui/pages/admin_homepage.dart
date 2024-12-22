@@ -1,3 +1,4 @@
+import 'package:aplikasi_bsu/ui/pages/admin_manage_product_page.dart';
 import 'package:aplikasi_bsu/ui/pages/admin_view_trash_data.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -194,7 +195,13 @@ class _MainAdminState extends State<MainAdmin> {
                 AdminMenuCard(
                   title: 'Kelola Stok Produk',
                   iconUrl: 'assets/i_product.png',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminManageProductPage()),
+                    );
+                  },
                 ),
               ],
             ),
