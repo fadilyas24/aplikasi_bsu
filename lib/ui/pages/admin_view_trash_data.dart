@@ -31,7 +31,7 @@ class _TrashPageState extends State<TrashPage> {
   Future<void> _fetchTrashData() async {
     try {
       final response =
-          await http.get(Uri.parse('http://192.168.1.8:5000/trash'));
+          await http.get(Uri.parse('https://bsuapp.space/api/trash'));
       if (response.statusCode == 200) {
         setState(() {
           trashList = json.decode(response.body);
@@ -70,7 +70,7 @@ class _TrashPageState extends State<TrashPage> {
   Future<void> _addTrash() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/trash'),
+        Uri.parse('https://bsuapp.space/api/trash'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'name_trash': _nameController.text,
@@ -105,7 +105,7 @@ class _TrashPageState extends State<TrashPage> {
   Future<void> _deleteTrash(String trashId) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://192.168.1.8:5000/trash/$trashId'),
+        Uri.parse('https://bsuapp.space/api/trash/$trashId'),
       );
       if (response.statusCode == 200) {
         _fetchTrashData();
@@ -124,7 +124,7 @@ class _TrashPageState extends State<TrashPage> {
   Future<void> _editTrash(String trashId) async {
     try {
       final response = await http.put(
-        Uri.parse('http://192.168.1.8:5000/trash/$trashId'),
+        Uri.parse('https://bsuapp.space/api/trash/$trashId'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'name_trash': _nameController.text,
@@ -160,14 +160,15 @@ class _TrashPageState extends State<TrashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: whiteColor),
         title: Text(
           'Lihat Data Sampah',
           style: TextStyle(color: whiteColor),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: blueColor,
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Colors.blue))
+          ? Center(child: CircularProgressIndicator(color: blueColor))
           : _errorMessage.isNotEmpty
               ? Center(child: Text(_errorMessage))
               : Column(
@@ -179,7 +180,7 @@ class _TrashPageState extends State<TrashPage> {
                         decoration: InputDecoration(
                           labelText: 'Cari Nama Sampah',
                           border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.search, color: Colors.blue),
+                          prefixIcon: Icon(Icons.search, color: blueColor),
                         ),
                       ),
                     ),
@@ -209,7 +210,7 @@ class _TrashPageState extends State<TrashPage> {
                                 children: [
                                   Icon(
                                     Icons.recycling,
-                                    color: Colors.blue,
+                                    color: blueColor,
                                     size: 48,
                                   ),
                                   SizedBox(height: 8),
@@ -218,7 +219,7 @@ class _TrashPageState extends State<TrashPage> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: Colors.blue.shade800,
+                                      color: blueColor,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -248,10 +249,10 @@ class _TrashPageState extends State<TrashPage> {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    'Poin: ${trash['point_trash']}',
+                                    'Harga: ${trash['point_trash']}',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.blue.shade600,
+                                      color: blueColor,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -259,10 +260,16 @@ class _TrashPageState extends State<TrashPage> {
                                   ElevatedButton.icon(
                                     onPressed: () =>
                                         _showEditTrashDialog(trash),
-                                    icon: Icon(Icons.edit),
-                                    label: Text('Edit'),
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: whiteColor,
+                                    ),
+                                    label: Text(
+                                      'Edit',
+                                      style: TextStyle(color: whiteColor),
+                                    ),
                                     style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue),
+                                        backgroundColor: blueColor),
                                   ),
                                   ElevatedButton.icon(
                                     onPressed: () {
@@ -300,8 +307,14 @@ class _TrashPageState extends State<TrashPage> {
                                         ),
                                       );
                                     },
-                                    icon: Icon(Icons.delete),
-                                    label: Text('Hapus'),
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: whiteColor,
+                                    ),
+                                    label: Text(
+                                      'Hapus',
+                                      style: TextStyle(color: whiteColor),
+                                    ),
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red),
                                   ),
@@ -316,10 +329,16 @@ class _TrashPageState extends State<TrashPage> {
                       padding: const EdgeInsets.all(16.0),
                       child: ElevatedButton.icon(
                         onPressed: () => _showAddTrashDialog(),
-                        icon: Icon(Icons.add),
-                        label: Text('Tambah Data Sampah'),
+                        icon: Icon(
+                          Icons.add,
+                          color: whiteColor,
+                        ),
+                        label: Text(
+                          'Tambah Data Sampah',
+                          style: TextStyle(color: whiteColor),
+                        ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: blueColor,
                           foregroundColor: Colors.black,
                           padding: EdgeInsets.symmetric(
                               vertical: 16, horizontal: 16),
@@ -339,11 +358,12 @@ class _TrashPageState extends State<TrashPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        backgroundColor: whiteColor,
         title: Row(
           children: [
-            Icon(Icons.recycling, color: Colors.blue),
+            Icon(Icons.recycling, color: blueColor),
             SizedBox(width: 8),
-            Text('Tambah Data Sampah'),
+            Text('Tambah Data Sampah', style: TextStyle(fontSize: 20)),
           ],
         ),
         content: SingleChildScrollView(
@@ -398,7 +418,7 @@ class _TrashPageState extends State<TrashPage> {
                 controller: _pointController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Poin',
+                  labelText: 'Harga',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.star, color: Colors.blue),
                 ),

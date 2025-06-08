@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../shared/theme.dart';
+import 'package:aplikasi_bsu/shared/theme.dart';
 
 class AdminManageUser extends StatefulWidget {
   const AdminManageUser({super.key});
@@ -48,7 +48,7 @@ class _AdminManageUserState extends State<AdminManageUser> {
 
       // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/admin/profile'),
+        Uri.parse('https://bsuapp.space/api/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token', // Sertakan token JWT di header
@@ -81,7 +81,7 @@ class _AdminManageUserState extends State<AdminManageUser> {
       if (token == null) throw Exception('Token is missing');
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/users'),
+        Uri.parse('https://bsuapp.space/api/users'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -121,18 +121,53 @@ class _AdminManageUserState extends State<AdminManageUser> {
     });
   }
 
+  void _deleteUser(String userId) async {
+  try {
+    final token = await getToken();
+    final response = await http.delete(
+      Uri.parse('https://bsuapp.space/api/users/$userId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    debugPrint("Status Code: ${response.statusCode}");
+    debugPrint("Response Body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _users.removeWhere((user) => user['user_id'].toString() == userId);
+        filteredUsers = _users;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nasabah berhasil dihapus')),
+      );
+    } else {
+      throw Exception('Gagal menghapus nasabah');
+    }
+  } catch (e) {
+    debugPrint("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Terjadi kesalahan: $e')),
+    );
+  }
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kelola Nasabah'),
+        iconTheme: IconThemeData(color: whiteColor),
+        backgroundColor: blueColor,
+        title: Text('Kelola Nasabah', style: TextStyle(color: whiteColor)),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage.isNotEmpty
               ? Center(child: Text(_errorMessage))
               : ListView(
-                  padding: EdgeInsets.symmetric(horizontal: edge),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: edge, vertical: edge),
                   children: [
                     TextField(
                       decoration: const InputDecoration(
@@ -141,22 +176,44 @@ class _AdminManageUserState extends State<AdminManageUser> {
                       ),
                       onChanged: _onSearch,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 26),
                     ...filteredUsers.map((user) {
-                      return AdminUserCard(
-                        name: user['full_name'] ?? 'Nama tidak tersedia',
-                        email: user['email'] ?? 'Email tidak tersedia',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AdminUserData(userData: user),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
+  return AdminUserCard(
+    name: user['full_name'] ?? 'Nama tidak tersedia',
+    email: user['email'] ?? 'Email tidak tersedia',
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdminUserData(userData: user),
+        ),
+      );
+    },
+    onDelete: () {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Hapus Nasabah'),
+          content: Text('Yakin ingin menghapus nasabah ini?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _deleteUser(user['user_id'].toString());
+              },
+              child: Text('Hapus', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}).toList()
+
                   ],
                 ),
     );

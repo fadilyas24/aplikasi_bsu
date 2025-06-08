@@ -1,14 +1,13 @@
 import 'dart:convert';
-import 'package:aplikasi_bsu/helpers/activity_log_helper.dart';
+import 'package:aplikasi_bsu/shared/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../widget/redeem_point_item.dart';
-import 'poin_redeem_success_page.dart';
 import 'package:aplikasi_bsu/ui/widget/product_confirm_alert.dart';
 
 class RedeemPointPage extends StatefulWidget {
-  const RedeemPointPage({super.key});
+  final VoidCallback? onRedeemSuccess;
+  const RedeemPointPage({super.key, this.onRedeemSuccess});
 
   @override
   State<RedeemPointPage> createState() => _RedeemPointPageState();
@@ -37,7 +36,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/user-sessions'),
+        Uri.parse('https://bsuapp.space/api/user-sessions'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -65,7 +64,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
   Future<void> fetchProducts() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/products'),
+        Uri.parse('https://bsuapp.space/api/products'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -100,7 +99,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       }
 
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/redeem-points'),
+        Uri.parse('https://bsuapp.space/api/redeem-points'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -112,28 +111,21 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        int updatedPoints = data['new_points'];
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        'Permintaan penukaran berhasil dikirim. Menunggu validasi admin.',
+      ),
+    ),
+  );
 
-        setState(() {
-          userPoints = updatedPoints;
-        });
+  if (widget.onRedeemSuccess != null) {
+    widget.onRedeemSuccess!(); // Panggil callback agar HomePage refresh
+  }
 
-        // Simpan log aktivitas
-        await ActivityLogHelper.saveLog(productName, price);
-
-        // Navigasi ke halaman sukses dengan detail produk
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PoinRedeemSuccessPage(
-              productName: productName,
-              pointsUsed: price,
-              currentDate: DateTime.now(),
-            ),
-          ),
-        );
-      } else {
+  Navigator.pop(context);
+}
+ else {
         throw Exception(json.decode(response.body)['message']);
       }
     } catch (e) {
@@ -147,7 +139,7 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tukar Poin'),
+        title: Text('Tukar Saldo'),
       ),
       body: isLoadingUser || isLoadingProducts
           ? Center(child: CircularProgressIndicator())
@@ -160,12 +152,12 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Poin Anda:',
+                          'Saldo Anda:',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '$userPoints',
+                          'Rp $userPoints',
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -182,54 +174,115 @@ class _RedeemPointPageState extends State<RedeemPointPage> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 20,
-                        childAspectRatio: 0.68,
+                        childAspectRatio: 0.7,
                       ),
                       itemCount: products.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final product = products[index];
-                        return RedeemPoinItem(
-                          imageUrl:
-                              'assets/${product['product_name'].toLowerCase()}.png',
-                          title: product['product_name'],
-                          price: product['points'],
-                          onTap: () {
-                            if (userPoints < product['points']) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        'Poin Anda tidak mencukupi untuk menukar item ini.')),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) => ConfirmChangesProduct(
-                                  title: product['product_name'],
-                                  imageUrl:
-                                      'assets/${product['product_name'].toLowerCase()}.png',
-                                  price: product['points'],
-                                  onConfirm: (int totalItems) {
-                                    int totalPrice =
-                                        totalItems * (product['points'] as int);
-                                    if (userPoints < totalPrice) {
-                                      Navigator.pop(
-                                          context); // Tutup dialog jika poin tidak mencukupi
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            gradient: LinearGradient(
+                              colors: [blueColor, whiteColor],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: Offset(2, 5),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                  child: Icon(
+                                    Icons.card_giftcard,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 15),
+                                Text(
+                                  product['product_name'],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Rp ${product['points']}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.yellowAccent,
+                                  ),
+                                ),
+                                Spacer(),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: blueColor,
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (userPoints < product['points']) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
                                             content: Text(
-                                                'Poin Anda tidak mencukupi untuk jumlah item ini.')),
+                                                'Saldo Anda tidak mencukupi untuk menukar item ini.')),
                                       );
                                     } else {
-                                      redeemPoints(
-                                          totalPrice, product['product_name']);
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            ConfirmChangesProduct(
+                                          title: product['product_name'],
+                                          price: product['points'],
+                                          onConfirm: (int totalItems) {
+                                            int totalPrice = totalItems *
+                                                (product['points'] as int);
+                                            if (userPoints < totalPrice) {
+                                              Navigator.pop(context);
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                    content: Text(
+                                                        'Saldo Anda tidak mencukupi untuk jumlah item ini.')),
+                                              );
+                                            } else {
+                                              redeemPoints(totalPrice,
+                                                  product['product_name']);
+                                            }
+                                          },
+                                        ),
+                                      );
                                     }
                                   },
+                                  child: Text('Tukar'),
                                 ),
-                              );
-                            }
-                          },
+                              ],
+                            ),
+                          ),
                         );
                       },
                     ),

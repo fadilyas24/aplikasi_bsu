@@ -1,18 +1,16 @@
 // import 'package:aplikasi_bsu/ui/pages/poin_redeem_success_page.dart';
 import 'package:flutter/material.dart';
 import '../../shared/theme.dart';
-import '../pages/poin_redeem_success_page.dart';
+// import '../pages/poin_redeem_success_page.dart';
 
 class ConfirmChangesProduct extends StatefulWidget {
   final String title;
-  final String imageUrl;
   final int price;
   final Function(int totalItems) onConfirm; // Tambahkan parameter callback
 
   const ConfirmChangesProduct({
     super.key,
     required this.title,
-    required this.imageUrl,
     required this.price,
     required this.onConfirm, // Inisialisasi callback
   });
@@ -32,170 +30,117 @@ class _ConfirmChangesProductState extends State<ConfirmChangesProduct> {
   }
 
   void _updatePrice() {
-    setState(
-      () {
-        _price = _counter * widget.price;
-      },
-    );
+    setState(() {
+      _price = _counter * widget.price;
+    });
   }
 
   void _incrementCounter() {
-    setState(
-      () {
-        _counter++;
-        _updatePrice();
-      },
-    );
+    setState(() {
+      _counter++;
+      _updatePrice();
+    });
   }
 
   void _decrementCounter() {
-    setState(
-      () {
-        if (_counter > 1) {
-          _counter--;
-          _updatePrice();
-        }
-      },
-    );
+    setState(() {
+      if (_counter > 1) {
+        _counter--;
+        _updatePrice();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.zero,
+      insetPadding: EdgeInsets.symmetric(
+          horizontal: 10, vertical: 20), // Atur padding inset
       alignment: Alignment.bottomCenter,
-      content: Container(
-        padding: EdgeInsets.all(15),
-        height: 200,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: whiteColor,
-        ),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(widget.imageUrl),
+      content: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(15),
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: whiteColor,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize:
+                MainAxisSize.min, // Menyesuaikan tinggi berdasarkan konten
+            children: [
+              Text(
+                widget.title,
+                style: regularTextStyle.copyWith(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Rp $_price', // Menggunakan nilai counter yang dikelola oleh state
+                style: blueTextStyle.copyWith(fontSize: 14),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: _decrementCounter,
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: blueColor,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Icon(Icons.remove, color: whiteColor),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.title,
-                      style: regularTextStyle.copyWith(fontSize: 18),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      '$_price Poin', // Menggunakan nilai counter yang dikelola oleh state
-                      style: blueTextStyle.copyWith(fontSize: 14),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            _decrementCounter();
-                          },
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: blueColor,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Image.asset(
-                              'assets/i_minus.png',
-                              color: whiteColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        Text(
-                          '$_counter', // Menggunakan nilai counter yang dikelola oleh state
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        SizedBox(width: 15),
-                        GestureDetector(
-                          onTap: () {
-                            _incrementCounter();
-                          },
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: blueColor,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Image.asset(
-                              'assets/i_plus.png',
-                              color: whiteColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              height: 50,
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(13),
+                  Text(
+                    '$_counter', // Menggunakan nilai counter
+                    style: regularTextStyle.copyWith(fontSize: 16),
+                  ),
+                  GestureDetector(
+                    onTap: _incrementCounter,
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: blueColor,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Icon(Icons.add, color: whiteColor),
                     ),
                   ),
-                  backgroundColor: MaterialStateProperty.all<Color>(blueColor),
-                  elevation: MaterialStateProperty.all<double>(0),
-                ),
-                onPressed: () {
-                  widget
-                      .onConfirm(_counter); // Kembalikan jumlah item ke parent
-                  Navigator.pop(context); // Tutup dialog
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PoinRedeemSuccessPage(
-                        productName: widget.title, // Nama produk
-                        pointsUsed: _price, // Total poin yang digunakan
-                        currentDate: DateTime.now(), // Tanggal sekarang
+                ],
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(13),
                       ),
                     ),
-                  );
-                },
-                child: Text(
-                  'Tukar Poin',
-                  style: whiteTextStyle.copyWith(fontSize: 16),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(blueColor),
+                    elevation: MaterialStateProperty.all<double>(0),
+                  ),
+                  onPressed: () {
+                    widget.onConfirm(
+                        _counter); // Kembalikan jumlah item ke parent
+                    Navigator.pop(context); // Tutup dialog
+                  },
+                  child: Text(
+                    'Tukar Saldo',
+                    style: whiteTextStyle.copyWith(fontSize: 16),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -18,13 +18,13 @@ class _MainPageState extends State<MainPage> {
   int currentMenu = 0;
   Map<String, dynamic>? userProfile;
   bool isLoading = true;
-  List<Map<String, dynamic>> activityLogs = []; // Tambahkan properti ini
+  List<Map<String, dynamic>> activityLogs = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUserProfile();
-    fetchActivityLogs(); // Panggil fungsi untuk fetch log aktivitas
+    fetchActivityLogs();
   }
 
   Future<void> _fetchUserProfile() async {
@@ -33,11 +33,8 @@ class _MainPageState extends State<MainPage> {
     if (token != null) {
       try {
         final response = await http.get(
-          Uri.parse(
-              'http://192.168.1.8:5000/user-sessions'), // Ganti URL dengan API Anda
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
+          Uri.parse('https://bsuapp.space/api/user-sessions'),
+          headers: {'Authorization': 'Bearer $token'},
         );
 
         if (response.statusCode == 200) {
@@ -45,17 +42,9 @@ class _MainPageState extends State<MainPage> {
             userProfile = json.decode(response.body);
             isLoading = false;
           });
-        } else if (response.statusCode == 401) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Token has expired')),
-          );
-        } else if (response.statusCode == 402) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid or missing token')),
-          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to load profile')),
+            SnackBar(content: Text('Gagal memuat profil')),
           );
         }
       } catch (e) {
@@ -63,66 +52,136 @@ class _MainPageState extends State<MainPage> {
           isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An error occurred')),
+          SnackBar(content: Text('Terjadi kesalahan')),
         );
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Token is missing')),
-      );
     }
   }
 
   Future<void> fetchActivityLogs() async {
-  try {
-    String? token = await getToken();
-    if (token == null) throw Exception('Token is missing');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
+      String? userId = prefs.getString('user_id');
 
-    // Fetch Redeem Activities
-    final redeemResponse = await http.get(
-      Uri.parse('http://192.168.1.8:5000/redeem-activities'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+      if (token == null || userId == null) {
+        throw Exception('Token or User ID is missing');
+      }
 
-    // Fetch Savings Activities
-    final savingsResponse = await http.get(
-      Uri.parse('http://192.168.1.8:5000/savings-activities?user_id=${userProfile?['user_id']}'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+      final redeemResponse = await http.get(
+        Uri.parse('https://bsuapp.space/api/redeem-activities'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (redeemResponse.statusCode == 200 && savingsResponse.statusCode == 200) {
-      final List<dynamic> redeemLogs = json.decode(redeemResponse.body);
-      final List<dynamic> savingsLogs = json.decode(savingsResponse.body);
+      final savingsResponse = await http.get(
+        Uri.parse(
+            'https://bsuapp.space/api/savings-activities?user_id=$userId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-      // Combine Redeem and Savings Activities
-      setState(() {
-        activityLogs = [
+      if (redeemResponse.statusCode == 200 &&
+          savingsResponse.statusCode == 200) {
+        final List<dynamic> redeemLogs = json.decode(redeemResponse.body);
+        final List<dynamic> savingsLogs = json.decode(savingsResponse.body);
+
+        List<Map<String, dynamic>> combined = [
           ...redeemLogs.map((log) => {
+                'type': 'redeem',
                 'title': log['title'],
                 'productName': log['product_name'] ?? '-',
                 'pointsUsed': log['redeemed_points'],
                 'date': log['time'],
+                'status': log['status'] ?? 'approved',
               }),
           ...savingsLogs.map((log) => {
+                'type': 'savings',
                 'title': log['title'],
                 'productName': 'Menabung',
                 'pointsUsed': log['points'],
                 'date': log['time'],
               }),
         ];
-      });
-    } else {
-      throw Exception('Failed to fetch activity logs');
-    }
-  } catch (e) {
-    print('Error fetching logs: $e');
-  }
-}
 
+        combined.sort((a, b) =>
+            DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
+
+        setState(() {
+          activityLogs = combined;
+        });
+      } else {
+        throw Exception('Gagal mengambil riwayat aktivitas');
+      }
+    } catch (e) {
+      print('Error fetching logs: $e');
+    }
+  }
 
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('jwt_token');
+  }
+
+  Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: whiteColor,
+        title: Text('Anda telah keluar'),
+        content: Text('Anda berhasil keluar dari aplikasi.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(color: blueColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> refreshData() async {
+    await _fetchUserProfile();
+    await fetchActivityLogs();
+  }
+
+  Future<bool> _onWillPop() async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: whiteColor,
+            title: Text('Konfirmasi Logout'),
+            content: Text('Apakah Anda ingin keluar?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'Tidak',
+                  style: TextStyle(color: redColor),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  _logout();
+                },
+                child: Text(
+                  'Iya',
+                  style: TextStyle(color: blueColor),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   Widget bottomNavigationBar() {
@@ -131,81 +190,91 @@ class _MainPageState extends State<MainPage> {
         return HomePage(
           points: userProfile?['points'] ?? 0,
           voucher: userProfile?['voucher'] ?? 0,
-          activityLogs: activityLogs, // Kirim data log aktivitas ke HomePage
+          activityLogs: activityLogs,
+          onRedeemSuccess: () async {
+            await refreshData(); // Pastikan refresh dijalankan
+            setState(() {}); // Update tampilan
+          },
         );
       case 1:
-        return const NotificationPage();
+        return NotificationsPage();
       case 2:
         return const ProfilePage();
       default:
         return HomePage(
           points: userProfile?['points'] ?? 0,
           voucher: userProfile?['voucher'] ?? 0,
-          activityLogs: activityLogs, // Kirim data log aktivitas ke HomePage
+          activityLogs: activityLogs,
+          onRedeemSuccess: () async {
+            await refreshData();
+            setState(() {});
+          },
         );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Container(
-        height: 80,
-        child: BottomAppBar(
-          padding: EdgeInsets.zero,
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            backgroundColor: whiteColor,
-            selectedItemColor: blueColor,
-            unselectedItemColor: greyColor,
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            selectedLabelStyle: blueTextStyle.copyWith(
-              fontSize: 12,
-              fontWeight: semiBold,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        bottomNavigationBar: Container(
+          height: 80,
+          child: BottomAppBar(
+            padding: EdgeInsets.zero,
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              elevation: 0,
+              backgroundColor: whiteColor,
+              selectedItemColor: blueColor,
+              unselectedItemColor: greyColor,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              selectedLabelStyle: blueTextStyle.copyWith(
+                fontSize: 12,
+                fontWeight: semiBold,
+              ),
+              unselectedLabelStyle: blueTextStyle.copyWith(
+                fontSize: 12,
+                fontWeight: semiBold,
+              ),
+              currentIndex: currentMenu,
+              onTap: (value) {
+                setState(() {
+                  currentMenu = value;
+                });
+              },
+              items: [
+                BottomNavigationBarItem(
+                  icon: Image.asset(
+                    'assets/i_home.png',
+                    width: 30,
+                    color: currentMenu == 0 ? blueColor : greyColor,
+                  ),
+                  label: 'Beranda',
+                ),
+                BottomNavigationBarItem(
+                  icon: Image.asset(
+                    'assets/i_notification.png',
+                    width: 30,
+                    color: currentMenu == 1 ? blueColor : greyColor,
+                  ),
+                  label: 'Notifikasi',
+                ),
+                BottomNavigationBarItem(
+                  icon: Image.asset(
+                    'assets/i_profile.png',
+                    width: 30,
+                    color: currentMenu == 2 ? blueColor : greyColor,
+                  ),
+                  label: 'Profil Saya',
+                ),
+              ],
             ),
-            unselectedLabelStyle: blueTextStyle.copyWith(
-              fontSize: 12,
-              fontWeight: semiBold,
-            ),
-            currentIndex: currentMenu,
-            onTap: (value) {
-              debugPrint('Current Menu $value');
-              setState(() {
-                currentMenu = value;
-              });
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/i_home.png',
-                  width: 30,
-                  color: currentMenu == 0 ? blueColor : greyColor,
-                ),
-                label: 'Beranda',
-              ),
-              BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/i_notification.png',
-                  width: 30,
-                  color: currentMenu == 1 ? blueColor : greyColor,
-                ),
-                label: 'Notifikasi',
-              ),
-              BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/i_profile.png',
-                  width: 30,
-                  color: currentMenu == 2 ? blueColor : greyColor,
-                ),
-                label: 'Profil Saya',
-              ),
-            ],
           ),
         ),
+        body: bottomNavigationBar(),
       ),
-      body: bottomNavigationBar(),
     );
   }
 }

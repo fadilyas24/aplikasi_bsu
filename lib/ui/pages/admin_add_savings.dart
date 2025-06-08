@@ -1,3 +1,4 @@
+import 'package:aplikasi_bsu/shared/theme.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -54,7 +55,7 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/trash'),
+        Uri.parse('https://bsuapp.space/api/trash'),
         headers: {'Authorization': 'Bearer $_userToken'},
       );
 
@@ -127,7 +128,7 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/add-savings'),
+        Uri.parse('https://bsuapp.space/api/add-savings'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_userToken',
@@ -158,7 +159,13 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tambah Tabungan')),
+      appBar: AppBar(
+          title: Text(
+            'Tambah Tabungan',
+            style: TextStyle(color: whiteColor),
+          ),
+          iconTheme: IconThemeData(color: whiteColor),
+          backgroundColor: blueColor),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _errorMessage.isNotEmpty
@@ -168,6 +175,8 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
                   children: _trashList.map((trash) {
                     final idTrash = trash['id_trash'].toString();
                     return Card(
+                      color: whiteColor,
+                      shadowColor: Colors.black,
                       child: ListTile(
                         leading: Icon(Icons.recycling),
                         title: Text(trash['name_trash']),
@@ -193,7 +202,7 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                '${_calculatePoints(int.parse(idTrash), _inputWeights[idTrash] ?? 0.0).toStringAsFixed(1)} pts',
+                                'Rp ${_calculatePoints(int.parse(idTrash), _inputWeights[idTrash] ?? 0.0).toStringAsFixed(1)}',
                               ),
                             ],
                           ),
@@ -204,8 +213,17 @@ class _AdminAddSavingsState extends State<AdminAddSavings> {
                 ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _submitSavings,
-        label: Text('Simpan Tabungan'),
-        icon: Icon(Icons.save),
+        label: Text(
+          'Simpan Tabungan',
+          style: TextStyle(
+            color: whiteColor,
+          ),
+        ),
+        backgroundColor: blueColor,
+        icon: Icon(
+          Icons.save,
+          color: whiteColor,
+        ),
       ),
     );
   }

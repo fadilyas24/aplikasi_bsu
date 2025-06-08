@@ -26,7 +26,7 @@ class PoinRedeemSuccessPage extends StatelessWidget {
               children: [
                 SizedBox(height: 30),
                 Text(
-                  'Penukaran Poin Berhasil',
+                  'Penukaran Saldo Berhasil',
                   style: blackTextStyle.copyWith(
                     fontSize: 20,
                     fontWeight: semiBold,
@@ -92,42 +92,42 @@ class PoinRedeemSuccessPage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Total Poin',
+                            'Total Saldo',
                             style: blackTextStyle.copyWith(
                                 fontSize: 14, fontWeight: medium),
                           ),
                           Spacer(),
                           Text(
-                            '$pointsUsed Poin',
+                            'Rp $pointsUsed',
                             style: greyTextStyle.copyWith(
                                 fontSize: 14, fontWeight: medium),
                           ),
                         ],
                       ),
                       SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Text(
-                            'Status',
-                            style: blackTextStyle.copyWith(fontSize: 14),
-                          ),
-                          Spacer(),
-                          Container(
-                            width: 130,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: redColor,
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Belum diambil',
-                                style: whiteTextStyle.copyWith(fontSize: 14),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Text(
+                      //       'Status',
+                      //       style: blackTextStyle.copyWith(fontSize: 14),
+                      //     ),
+                      //     Spacer(),
+                      //     Container(
+                      //       width: 130,
+                      //       height: 40,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(100),
+                      //         color: redColor,
+                      //       ),
+                      //       child: Center(
+                      //         child: Text(
+                      //           'Belum diambil',
+                      //           style: whiteTextStyle.copyWith(fontSize: 14),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),

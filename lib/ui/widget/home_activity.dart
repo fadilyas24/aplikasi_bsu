@@ -57,7 +57,7 @@ class ActvityItem extends StatelessWidget {
             ),
           ),
           Text(
-            '$value Poin',
+            'Rp $value',
             style: blackTextStyle.copyWith(
               fontWeight: semiBold,
               fontSize: 14,

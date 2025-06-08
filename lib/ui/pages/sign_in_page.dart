@@ -12,7 +12,7 @@ class SignInPage extends StatelessWidget {
   Future<void> loginUser(
       BuildContext context, String email, String password) async {
     const String url =
-        'http://192.168.1.8:5000/user/login'; // Ubah sesuai URL API Flask Anda
+        'https://bsuapp.space/api/user/login'; // Ubah sesuai URL API Flask Anda
 
     final response = await http.post(
       Uri.parse(url),

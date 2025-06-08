@@ -8,8 +8,7 @@ import 'package:intl/intl.dart';
 
 import 'package:aplikasi_bsu/shared/theme.dart';
 import '../widget/admin_menu_card.dart';
-import '../widget/user_profile_card.dart';
-import 'admin_notification_page.dart';
+import 'admin_validation_page.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({Key? key});
@@ -35,7 +34,7 @@ class _MainAdminState extends State<MainAdmin> {
   Future<void> _getAdminData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      _token = prefs.getString('token'); // Ambil token dari SharedPreferences
+      _token = prefs.getString('token');
 
       if (_token == null) {
         setState(() {
@@ -45,12 +44,11 @@ class _MainAdminState extends State<MainAdmin> {
         return;
       }
 
-      // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/admin/profile'),
+        Uri.parse('https://bsuapp.space/api/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token', // Sertakan token JWT di header
+          'Authorization': 'Bearer $_token',
         },
       );
 
@@ -109,12 +107,12 @@ class _MainAdminState extends State<MainAdmin> {
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset(
-                    'assets/i_notification.png',
+                    'assets/i_validation.png',
                     width: 32,
                     height: 32,
                     color: _currentIndex == 1 ? blueColor : greyColor,
                   ),
-                  label: 'Notifikasi',
+                  label: 'Validasi',
                 ),
               ],
             ),
@@ -129,7 +127,7 @@ class _MainAdminState extends State<MainAdmin> {
                   index: _currentIndex,
                   children: [
                     adminHomePage(context),
-                    AdminNotificationPage(),
+                    AdminValidationPage(),
                   ],
                 ),
     );
@@ -141,28 +139,64 @@ class _MainAdminState extends State<MainAdmin> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(
-              top: 55,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: whiteColor,
-            ),
-            child: Column(
-              children: [
-                UserProfileCard(
-                  imgUrl: 'assets/img_profile.png',
-                  name: _adminData?['username'] ?? 'Unknown',
-                  email: 'Admin',
-                  onTap: () {
-                    Navigator.pushNamed(context, '/admin-profile');
-                  },
-                ),
-              ],
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/admin-profile');
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(top: 55),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 4,
+                    blurRadius: 10,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: blueColor.withOpacity(0.15),
+                    child: Icon(
+                      Icons.person,
+                      size: 32,
+                      color: blueColor,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _adminData?['username'] ?? 'Unknown',
+                        style: blackTextStyle.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Admin',
+                        style: greyTextStyle.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
+          SizedBox(height: 24),
           Expanded(
             child: GridView.count(
               crossAxisCount: 2,
@@ -178,8 +212,8 @@ class _MainAdminState extends State<MainAdmin> {
                   },
                 ),
                 AdminMenuCard(
-                  title: 'Penukaran Poin',
-                  iconUrl: 'assets/i_coin.png',
+                  title: 'Kelola Lokasi',
+                  iconUrl: 'assets/i_location_admin.png',
                   onTap: () {},
                 ),
                 AdminMenuCard(

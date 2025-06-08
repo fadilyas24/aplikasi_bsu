@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../../shared/theme.dart';
+import 'package:aplikasi_bsu/shared/theme.dart';
 
 class AdminUserCard extends StatelessWidget {
   final String name;
   final String email;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
   const AdminUserCard({
     Key? key,
     required this.name,
     required this.email,
     this.onTap,
+    this.onDelete,
   }) : super(key: key);
 
   @override
@@ -18,17 +20,16 @@ class AdminUserCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(
-          top: 10,
-        ),
+        margin: const EdgeInsets.only(top: 10),
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: whiteColor,
         ),
         child: Row(
           children: [
+            // Informasi nasabah
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,9 +41,7 @@ class AdminUserCard extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(
-                    height: 2,
-                  ),
+                  const SizedBox(height: 2),
                   Text(
                     email,
                     style: greyTextStyle.copyWith(
@@ -52,6 +51,14 @@ class AdminUserCard extends StatelessWidget {
                 ],
               ),
             ),
+
+            // Tombol hapus
+            if (onDelete != null)
+              IconButton(
+                icon: Icon(Icons.delete, color: redColor),
+                onPressed: onDelete,
+                tooltip: 'Hapus Nasabah',
+              ),
           ],
         ),
       ),

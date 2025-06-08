@@ -1,3 +1,5 @@
+import 'package:aplikasi_bsu/shared/theme.dart';
+import 'package:aplikasi_bsu/ui/widget/forms.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -22,7 +24,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/admin/login'),
+        Uri.parse('https://bsuapp.space/api/admin/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': _usernameController.text,
@@ -62,7 +64,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 245, 247, 248),
+      backgroundColor: whiteColor,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -77,73 +79,34 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     height: 100,
                   ),
                   SizedBox(height: 16),
-                  Text(
-                    'Admin Login',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 107, 186),
-                    ),
-                  ),
+                  Text('Admin Login',
+                      style: blackTextStyle.copyWith(fontSize: 20)),
                   SizedBox(height: 8),
-                  Text(
-                    'Kelola sistem pengelolaan sampah Anda',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: const Color.fromARGB(255, 0, 107, 186)),
-                  ),
+                  Text('Kelola sistem pengelolaan sampah Anda',
+                      style: blackTextStyle),
                 ],
               ),
               SizedBox(height: 40),
 
               // Username input
-              TextField(
+              CustomFormField(
+                title: 'Username',
+                formHintText: 'Masukkan Username anda',
                 controller: _usernameController,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person,
-                      color: Color.fromARGB(255, 0, 107, 186)),
-                  labelText: 'Username',
-                  labelStyle:
-                      TextStyle(color: Color.fromARGB(255, 0, 107, 186)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color.fromARGB(255, 0, 107, 186)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Color.fromARGB(255, 0, 107, 186)),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
               ),
-              SizedBox(height: 20),
-
-              // Password input
-              TextField(
-                controller: _passwordController,
+              SizedBox(
+                height: 16,
+              ),
+              // PASSWORD INPUT
+              CustomFormField(
+                title: 'Password',
+                formHintText: 'Masukkan password Anda',
                 obscureText: true,
-                decoration: InputDecoration(
-                  prefixIcon:
-                      Icon(Icons.lock, color: Color.fromARGB(255, 0, 107, 186)),
-                  labelText: 'Password',
-                  labelStyle:
-                      TextStyle(color: Color.fromARGB(255, 0, 107, 186)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color.fromARGB(255, 0, 107, 186)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Color.fromARGB(255, 0, 107, 186)),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
+                controller: _passwordController,
               ),
-              SizedBox(height: 30),
+              SizedBox(
+                height: 16,
+              ),
 
               // Login button
               _isLoading
@@ -157,7 +120,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                           horizontal: 50,
                           vertical: 15,
                         ),
-                        backgroundColor: Color.fromARGB(255, 0, 107, 186),
+                        backgroundColor: blueColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -167,7 +130,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: whiteColor),
                       ),
                     ),
               SizedBox(height: 20),
@@ -176,7 +139,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               if (_errorMessage.isNotEmpty)
                 Text(
                   _errorMessage,
-                  style: TextStyle(color: Colors.red, fontSize: 14),
+                  style: TextStyle(color: redColor, fontSize: 14),
                 ),
             ],
           ),

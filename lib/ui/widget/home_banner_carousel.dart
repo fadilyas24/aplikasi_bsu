@@ -1,8 +1,6 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-
-// import '../../shared/theme.dart';
+import 'package:aplikasi_bsu/shared/theme.dart'; // Tambahkan jika pakai warna custom
 
 class BannerCarousel extends StatefulWidget {
   final VoidCallback? onTap;
@@ -18,68 +16,63 @@ class BannerCarousel extends StatefulWidget {
 
 class _BannerCarouselState extends State<BannerCarousel> {
   int carouselIndex = 0;
-  CarouselController carouselController = CarouselController();
+
+  final List<String> bannerImages = [
+    'assets/img_banner.png',
+    'assets/img_banner2.png',
+    'assets/img_banner3.png',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         CarouselSlider(
-          items: [
-            GestureDetector(
+          items: bannerImages.map((imagePath) {
+            return GestureDetector(
+              onTap: widget.onTap,
               child: Container(
                 width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
-                    image: AssetImage('assets/img_banner.png'),
+                    image: AssetImage(imagePath),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: AssetImage('assets/img_banner.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: AssetImage('assets/img_banner.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: AssetImage('assets/img_banner.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )
-          ],
+            );
+          }).toList(),
           options: CarouselOptions(
-            height: 150,
+            height: 140,
             viewportFraction: 1,
-            enableInfiniteScroll: true,
-            initialPage: carouselIndex,
+            enlargeCenterPage: true,
+            autoPlay: true,
+            autoPlayInterval: Duration(seconds: 3),
             onPageChanged: (index, reason) {
               setState(() {
                 carouselIndex = index;
               });
             },
           ),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(bannerImages.length, (index) {
+            bool isActive = index == carouselIndex;
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              width: isActive ? 16 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: isActive ? blueColor : greyColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          }),
         ),
       ],
     );

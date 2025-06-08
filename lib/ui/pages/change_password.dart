@@ -1,122 +1,8 @@
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
-// import 'package:shared_preferences/shared_preferences.dart';
-
-// class ChangePasswordScreen extends StatefulWidget {
-//   @override
-//   _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
-// }
-
-// class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-//   final _formKey = GlobalKey<FormState>();
-//   TextEditingController oldPasswordController = TextEditingController();
-//   TextEditingController newPasswordController = TextEditingController();
-//   bool isLoading = false;
-
-//   Future<void> _changePassword() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     String? token = prefs.getString('jwt_token');
-
-//     if (token == null) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('You are not logged in')),
-//       );
-//       return;
-//     }
-
-//     setState(() {
-//       isLoading = true;
-//     });
-
-//     final url = Uri.parse('http://10.60.64.23:5000/user/change-password');
-//     final response = await http.put(
-//       url,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer $token',
-//       },
-//       body: jsonEncode({
-//         'old_password': oldPasswordController.text,
-//         'new_password': newPasswordController.text,
-//       }),
-//     );
-
-//     setState(() {
-//       isLoading = false;
-//     });
-
-//     if (response.statusCode == 200) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Password updated successfully')),
-//       );
-//     } else {
-//       final responseData = json.decode(response.body);
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Error: ${responseData['message']}')),
-//       );
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Change Password'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Form(
-//           key: _formKey,
-//           child: Column(
-//             children: [
-//               TextFormField(
-//                 controller: oldPasswordController,
-//                 decoration: InputDecoration(labelText: 'Old Password'),
-//                 obscureText: true,
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter your old password';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               SizedBox(height: 16),
-//               TextFormField(
-//                 controller: newPasswordController,
-//                 decoration: InputDecoration(labelText: 'New Password'),
-//                 obscureText: true,
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter a new password';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               SizedBox(height: 32),
-//               isLoading
-//                   ? CircularProgressIndicator()
-//                   : ElevatedButton(
-//                       onPressed: () {
-//                         if (_formKey.currentState!.validate()) {
-//                           _changePassword();
-//                         }
-//                       },
-//                       child: Text('Change Password'),
-//                     ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-import 'package:aplikasi_bsu/shared/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:aplikasi_bsu/shared/theme.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -124,18 +10,17 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  final _formKey = GlobalKey<FormState>();
   TextEditingController oldPasswordController = TextEditingController();
-  TextEditingController newPasswordController = TextEditingController();
   bool isLoading = false;
 
-  Future<void> _changePassword() async {
+  // Fungsi untuk validasi password lama
+  Future<void> _validateOldPassword() async {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwt_token');
 
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You are not logged in')),
+        SnackBar(content: Text('Anda belum login')),
       );
       return;
     }
@@ -144,7 +29,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://10.60.64.39:5000/user/change-password');
+    final url = Uri.parse('https://bsuapp.space/api/user/change-password');
     final response = await http.put(
       url,
       headers: {
@@ -153,7 +38,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       },
       body: jsonEncode({
         'old_password': oldPasswordController.text,
-        'new_password': newPasswordController.text,
+        'new_password': 'dummy_password', // sementara
       }),
     );
 
@@ -161,110 +46,151 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       isLoading = false;
     });
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 400) {
+      final responseData = json.decode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password updated successfully')),
+        SnackBar(content: Text(responseData['message'] ?? 'Password salah')),
+      );
+    } else if (response.statusCode == 200) {
+      _showNewPasswordDialog(token); // tampilkan form password baru
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan')),
+      );
+    }
+  }
+
+  // Fungsi untuk mengubah password
+  Future<void> _changePassword(String newPassword, String token) async {
+    final url = Uri.parse('https://bsuapp.space/api/user/change-password');
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'old_password': oldPasswordController.text,
+        'new_password': newPassword,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      Navigator.pop(context); // tutup dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password berhasil diperbarui')),
       );
     } else {
       final responseData = json.decode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${responseData['message']}')),
+        SnackBar(content: Text('Gagal: ${responseData['message']}')),
       );
     }
+  }
+
+  // Dialog untuk password baru
+  void _showNewPasswordDialog(String token) {
+    final TextEditingController newPassController = TextEditingController();
+    final TextEditingController confirmPassController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: whiteColor,
+        title: Text('Masukkan Password Baru'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: newPassController,
+              obscureText: true,
+              decoration: InputDecoration(hintText: 'Password Baru'),
+            ),
+            SizedBox(height: 12),
+            TextFormField(
+              controller: confirmPassController,
+              obscureText: true,
+              decoration: InputDecoration(hintText: 'Konfirmasi Password'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Batalkan', style: TextStyle(color: redColor)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (newPassController.text != confirmPassController.text) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Password tidak cocok')),
+                );
+              } else if (newPassController.text.length < 6) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Password minimal 6 karakter')),
+                );
+              } else {
+                _changePassword(newPassController.text, token);
+              }
+            },
+            child: Text(
+              'Simpan',
+              style: TextStyle(color: blueColor),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Ubah Password',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        leading: BackButton(color: Colors.black),
+        title: Text('Ubah Password',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Password Baru',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: newPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Masukan password anda',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Masukan password baru';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Konfirmasi Password',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: oldPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Konfirmasi password anda',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Masukan konfirmasi password';
-                    }
-                    return null;
-                  },
-                ),
-                Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _changePassword();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            'Ubah Password',
-                            style: whiteTextStyle,
-                          ),
-                  ),
-                ),
-              ],
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Password Lama',
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+            SizedBox(height: 8),
+            TextFormField(
+              controller: oldPasswordController,
+              decoration: InputDecoration(
+                hintText: 'Masukkan password lama anda',
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              obscureText: true,
             ),
-          )),
+            Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _validateOldPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: blueColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text('Lanjut', style: whiteTextStyle),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

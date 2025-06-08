@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,31 +18,60 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
-  File? _profileImage;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadUserProfile();
+    _fetchUserProfileFromAPI();
   }
 
-  Future<void> _loadUserProfile() async {
+  Future<void> _fetchUserProfileFromAPI() async {
+    setState(() {
+      isLoading = true;
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _nameController.text = prefs.getString('full_name') ?? '';
-    _addressController.text = prefs.getString('user_address') ?? '';
-    _phoneController.text = prefs.getString('phonenum') ?? '';
-  }
+    String? token = prefs.getString('jwt_token');
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Token tidak ditemukan')),
+      );
       setState(() {
-        _profileImage = File(pickedFile.path);
+        isLoading = false;
       });
+      return;
+    }
+
+    final response = await http.get(
+      Uri.parse('https://bsuapp.space/api/user-sessions'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      setState(() {
+        _nameController.text = data['full_name'] ?? '';
+        _addressController.text = data['user_address'] ?? '';
+        _phoneController.text =
+            data['phonenum'] ?? ''; // Tetap kosong seperti permintaan
+        _emailController.text = data['email'] ?? '';
+
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data profil')),
+      );
     }
   }
 
@@ -67,54 +94,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return;
     }
 
-    Map<String, dynamic> updatedData = {};
+    Map<String, dynamic> updatedData = {
+      'user_id': userId,
+      'full_name': _nameController.text,
+      'user_address': _addressController.text,
+      'email': _emailController.text,
+    };
 
-    if (_nameController.text.isNotEmpty &&
-        _nameController.text != prefs.getString('full_name')) {
-      updatedData['full_name'] = _nameController.text;
-    }
-
-    if (_addressController.text.isNotEmpty &&
-        _addressController.text != prefs.getString('user_address')) {
-      updatedData['user_address'] = _addressController.text;
-    }
-
-    if (_phoneController.text.isNotEmpty &&
-        _phoneController.text != prefs.getString('phonenum')) {
+    if (_phoneController.text.isNotEmpty) {
       updatedData['phonenum'] = _phoneController.text;
     }
 
-    if (_profileImage != null) {
-      final bytes = await _profileImage!.readAsBytes();
-      updatedData['profile_picture'] = base64Encode(bytes);
-    }
-
-    if (updatedData.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tidak ada perubahan yang dilakukan')),
-      );
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
     final response = await http.put(
-      Uri.parse('http://192.168.1.8:5000/user/update'),
+      Uri.parse('https://bsuapp.space/api/user/update'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: json.encode({
-        'user_id': userId,
-        ...updatedData,
-      }),
+      body: json.encode(updatedData),
     );
 
     if (response.statusCode == 200) {
-      updatedData.forEach((key, value) {
-        prefs.setString(key, value.toString());
-      });
+      // Update ke SharedPreferences juga jika ingin
+      prefs.setString('full_name', _nameController.text);
+      prefs.setString('user_address', _addressController.text);
+      if (_phoneController.text.isNotEmpty) {
+        prefs.setString('phonenum', _phoneController.text);
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Profil berhasil diperbarui')),
@@ -138,20 +144,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         iconTheme: IconThemeData(color: blackColor),
-        title: Text(
-          'Edit Profil',
-        ),
+        title: Text('Edit Profil'),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView(
-              padding: EdgeInsets.symmetric(
-                horizontal: edge,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: edge),
               children: [
-                SizedBox(
-                  height: 30,
-                ),
+                SizedBox(height: 30),
                 Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -159,59 +159,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     color: whiteColor,
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundImage: _profileImage != null
-                              ? FileImage(_profileImage!)
-                              : AssetImage('assets/img_profile.png')
-                                  as ImageProvider,
-                        ),
+                      CustomFormField(
+                        title: 'Nama Lengkap',
+                        formHintText: 'Masukkan nama lengkap anda',
+                        controller: _nameController,
                       ),
-                      SizedBox(
-                        height: 10,
+                      SizedBox(height: 16),
+                      CustomFormField(
+                        title: 'Email',
+                        formHintText: 'Masukkan email anda',
+                        controller: _emailController,
                       ),
-                      CustomTextButton(
-                        title: 'Unggah Foto',
-                        onPressed: _pickImage,
+                      SizedBox(height: 30),
+                      CustomFormField(
+                        title: 'Alamat',
+                        formHintText: 'Masukkan alamat anda',
+                        controller: _addressController,
                       ),
-                      SizedBox(
-                        height: 30,
+                      SizedBox(height: 16),
+                      CustomFormField(
+                        title: 'No Handphone',
+                        formHintText: 'Masukkan no handphone anda',
+                        controller: _phoneController,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomFormField(
-                            title: 'Nama Lengkap',
-                            formHintText: 'Masukkan nama lengkap anda',
-                            controller: _nameController,
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          CustomFormField(
-                            title: 'Alamat',
-                            formHintText: 'Masukkan alamat anda',
-                            controller: _addressController,
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          CustomFormField(
-                            title: 'No Handphone',
-                            formHintText: 'Masukkan no handphone anda',
-                            controller: _phoneController,
-                          ),
-                          SizedBox(height: 30),
-                          CustomFilledButton(
-                            title: 'Simpan',
-                            onPressed: _saveProfile,
-                          ),
-                        ],
-                      )
+                      SizedBox(height: 30),
+                      CustomFilledButton(
+                        title: 'Simpan',
+                        onPressed: _saveProfile,
+                      ),
                     ],
                   ),
                 ),

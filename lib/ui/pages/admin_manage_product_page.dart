@@ -27,7 +27,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
   Future<void> _fetchProductData() async {
     try {
       final response =
-          await http.get(Uri.parse('http://192.168.1.8:5000/products'));
+          await http.get(Uri.parse('https://bsuapp.space/api/products'));
       if (response.statusCode == 200) {
         setState(() {
           productList = json.decode(response.body);
@@ -66,7 +66,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
   Future<void> _addProduct() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.8:5000/products'),
+        Uri.parse('https://bsuapp.space/api/products'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'product_name': _nameController.text,
@@ -93,7 +93,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
   Future<void> _deleteProduct(String productId) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://192.168.1.8:5000/products/$productId'),
+        Uri.parse('https://bsuapp.space/api/products/$productId'),
       );
       if (response.statusCode == 200) {
         _fetchProductData();
@@ -112,7 +112,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
   Future<void> _editProduct(String productId) async {
     try {
       final response = await http.put(
-        Uri.parse('http://192.168.1.8:5000/products/$productId'),
+        Uri.parse('https://bsuapp.space/api/products/$productId'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'product_name': _nameController.text,
@@ -140,11 +140,12 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: whiteColor),
         title: Text(
           'Kelola Produk',
           style: TextStyle(color: whiteColor),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: blueColor,
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -159,7 +160,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
                         decoration: InputDecoration(
                           labelText: 'Cari Nama Produk',
                           border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.search, color: Colors.blue),
+                          prefixIcon: Icon(Icons.search, color: blueColor),
                         ),
                       ),
                     ),
@@ -170,6 +171,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
                         itemBuilder: (context, index) {
                           final product = filteredProductList[index];
                           return Card(
+                            color: whiteColor,
                             elevation: 8,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -179,15 +181,15 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
                                 product['product_name'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue.shade800,
+                                  color: blueColor,
                                 ),
                               ),
-                              subtitle: Text('Poin: ${product['points']}'),
+                              subtitle: Text('Harga: Rp ${product['points']}'),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.edit, color: Colors.blue),
+                                    icon: Icon(Icons.edit, color: blueColor),
                                     onPressed: () =>
                                         _showEditProductDialog(product),
                                   ),
@@ -210,8 +212,8 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
                         icon: Icon(Icons.add),
                         label: Text('Tambah Produk'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
+                          backgroundColor: blueColor,
+                          foregroundColor: whiteColor,
                           padding: EdgeInsets.symmetric(
                               vertical: 16, horizontal: 16),
                           textStyle: TextStyle(fontSize: 16),
@@ -230,6 +232,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        backgroundColor: whiteColor,
         title: Row(
           children: [
             Icon(Icons.add_circle, color: Colors.blue),
@@ -253,7 +256,7 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
               controller: _pointsController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Poin',
+                labelText: 'Harga',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.star, color: Colors.blue),
               ),
@@ -316,11 +319,11 @@ class _AdminManageProductPageState extends State<AdminManageProductPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Batal', style: TextStyle(color: Colors.blue)),
+            child: Text('Batal', style: TextStyle(color: blueColor)),
           ),
           ElevatedButton(
             onPressed: () => _editProduct(product['id_product'].toString()),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+            style: ElevatedButton.styleFrom(backgroundColor: blueColor),
             child: Text('Simpan'),
           ),
         ],

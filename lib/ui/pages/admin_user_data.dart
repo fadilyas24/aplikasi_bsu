@@ -1,4 +1,4 @@
-import 'package:aplikasi_bsu/ui/widget/user_profile_card.dart';
+// import 'package:aplikasi_bsu/ui/widget/user_profile_card.dart'; // Hapus ini
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../shared/theme.dart';
@@ -22,17 +22,12 @@ class _AdminUserDataState extends State<AdminUserData> {
   @override
   void initState() {
     super.initState();
-    print("InitState dipanggil");
-    _loadToken().then((_) {
-      print("Token setelah load: $_userToken");
-    });
+    _loadToken();
   }
 
-  // Fungsi untuk mengambil token dari SharedPreferences
   Future<void> _loadToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-
     if (token == null) {
       Navigator.pushReplacementNamed(context, '/admin-login');
     } else {
@@ -40,58 +35,48 @@ class _AdminUserDataState extends State<AdminUserData> {
         _userToken = token;
       });
     }
-
-    // Debugging: Log token
-    print('Token yang diambil: $_userToken');
   }
 
   void _onMenuTap(int index) {
-    setState(
-      () {
-        _selectedIndex = index;
-      },
-    );
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   Future<List<Map<String, dynamic>>> fetchRedeemActivities(
       String userId) async {
-    if (_userToken == null) {
-      throw Exception('Token tidak ditemukan. Harap login ulang.');
-    }
+    if (_userToken == null) throw Exception('Token tidak ditemukan');
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/redeem-activities?user_id=$userId'),
-        headers: {
-          'Authorization': 'Bearer $_userToken',
-        },
+        Uri.parse('https://bsuapp.space/api/redeem-activities?user_id=$userId'),
+        headers: {'Authorization': 'Bearer $_userToken'},
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data
             .map((activity) => Map<String, dynamic>.from(activity))
+            .where((activity) =>
+                activity['status'] == 'approved') // filter approved only
             .toList();
       } else {
         throw Exception('Gagal mengambil data riwayat penukaran');
       }
     } catch (e) {
-      throw Exception('Terjadi kesalahan saat mengambil data: $e');
+      throw Exception('Terjadi kesalahan: $e');
     }
   }
 
   Future<List<Map<String, dynamic>>> fetchSavingsActivities(
       String userId) async {
-    if (_userToken == null) {
-      throw Exception('Token tidak ditemukan. Harap login ulang.');
-    }
+    if (_userToken == null) throw Exception('Token tidak ditemukan');
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/savings-activities?user_id=$userId'),
-        headers: {
-          'Authorization': 'Bearer $_userToken',
-        },
+        Uri.parse(
+            'https://bsuapp.space/api/savings-activities?user_id=$userId'),
+        headers: {'Authorization': 'Bearer $_userToken'},
       );
 
       if (response.statusCode == 200) {
@@ -103,50 +88,72 @@ class _AdminUserDataState extends State<AdminUserData> {
         throw Exception('Gagal mengambil data riwayat tabungan');
       }
     } catch (e) {
-      throw Exception('Terjadi kesalahan saat mengambil data: $e');
+      throw Exception('Terjadi kesalahan: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kelola Nasabah'),
-      ),
+      appBar: AppBar(title: const Text('Kelola Nasabah')),
       body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: edge),
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.05),
         children: [
-          UserProfileCard(
-            imgUrl: 'assets/img_profile.png',
-            name: widget.userData['full_name'] ?? 'Nama tidak tersedia',
-            email: widget.userData['email'] ?? 'Email tidak tersedia',
+          // Ganti UserProfileCard dengan tampilan manual
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: whiteColor,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.userData['full_name'] ?? 'Nama tidak tersedia',
+                    style: blackTextStyle.copyWith(
+                        fontSize: 18, fontWeight: semiBold)),
+                const SizedBox(height: 4),
+                Text(widget.userData['email'] ?? 'Email tidak tersedia',
+                    style: greyTextStyle.copyWith(fontSize: 14)),
+                const SizedBox(height: 10),
+                Text('Saldo: Rp ${widget.userData['points'] ?? 0}',
+                    style: blueTextStyle.copyWith(
+                        fontSize: 16, fontWeight: medium)),
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _selectedIndex == 0
-                  ? CustomFilledButton(
-                      title: 'Riwayat Tabungan',
-                      width: 175,
-                      onPressed: () => _onMenuTap(0),
-                    )
-                  : CustomTextButton(
-                      title: 'Riwayat Tabungan',
-                      width: 175,
-                      onPressed: () => _onMenuTap(0),
-                    ),
-              _selectedIndex == 1
-                  ? CustomFilledButton(
-                      title: 'Riwayat Penukaran',
-                      width: 175,
-                      onPressed: () => _onMenuTap(1),
-                    )
-                  : CustomTextButton(
-                      title: 'Riwayat Penukaran',
-                      width: 175,
-                      onPressed: () => _onMenuTap(1),
-                    ),
+              Flexible(
+                child: _selectedIndex == 0
+                    ? CustomFilledButton(
+                        title: 'Riwayat Tabungan',
+                        width: 175,
+                        onPressed: () => _onMenuTap(0))
+                    : CustomTextButton(
+                        title: 'Riwayat Tabungan',
+                        width: 175,
+                        onPressed: () => _onMenuTap(0)),
+              ),
+              Flexible(
+                child: _selectedIndex == 1
+                    ? CustomFilledButton(
+                        title: 'Riwayat Penukaran',
+                        width: 175,
+                        onPressed: () => _onMenuTap(1))
+                    : CustomTextButton(
+                        title: 'Riwayat Penukaran',
+                        width: 175,
+                        onPressed: () => _onMenuTap(1)),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -154,7 +161,7 @@ class _AdminUserDataState extends State<AdminUserData> {
             index: _selectedIndex,
             children: [
               buildRiwayatTabungan(),
-              buildRiwayatPenukaran(), // Tidak perlu kirim token secara eksplisit
+              buildRiwayatPenukaran(),
             ],
           ),
         ],
@@ -167,12 +174,50 @@ class _AdminUserDataState extends State<AdminUserData> {
             elevation: 20,
             title: 'Tambah Catatan',
             onPressed: () {
-              Navigator.pushNamed(
-                context,
-                '/admin-add-savings',
-                arguments: {
-                  'userId': widget.userData['user_id'].toString()
-                }, // Gunakan widget.userData
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: whiteColor,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (context) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Pilih Cara Menabung',
+                            style: blackTextStyle.copyWith(fontSize: 18)),
+                        const SizedBox(height: 20),
+                        ListTile(
+                          leading: Icon(Icons.edit, color: blueColor),
+                          title: const Text('Input Manual'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/admin-add-savings',
+                                arguments: {
+                                  'userId':
+                                      widget.userData['user_id'].toString(),
+                                });
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.scale, color: blueColor),
+                          title: const Text('Timbangan Digital (IoT)'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(
+                                context, '/admin-add-savings-iot',
+                                arguments: {
+                                  'userId':
+                                      widget.userData['user_id'].toString(),
+                                });
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -183,39 +228,31 @@ class _AdminUserDataState extends State<AdminUserData> {
   }
 
   Widget buildRiwayatTabungan() {
-    if (_userToken == null) {
-      return Center(
-        child: Text('Memuat token...'),
-      );
-    }
+    if (_userToken == null) return const Center(child: Text('Memuat token...'));
 
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: fetchSavingsActivities(widget.userData['user_id'].toString()),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return const Center(child: CircularProgressIndicator());
+        if (snapshot.hasError)
           return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('Tidak ada riwayat tabungan'));
-        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty)
+          return const Center(child: Text('Tidak ada riwayat tabungan'));
 
-        final activities = snapshot.data!;
         return Container(
-          padding: EdgeInsets.all(16),
-          margin: EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(top: 10),
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: whiteColor,
-          ),
+              borderRadius: BorderRadius.circular(15), color: whiteColor),
           child: Column(
-            children: activities.map((activity) {
+            children: snapshot.data!.map((activity) {
               return ActvityItem(
                 iconUrl: 'assets/i_activity_deposit.png',
                 title: activity['title'] ?? 'Menabung Sampah',
-                time: activity['time'] ?? 'Waktu tidak tersedia',
-                value: '+ ${activity['points'] ?? 0}',
+                time: activity['time'] ?? '-',
+                value: '${activity['points'] ?? 0}',
               );
             }).toList(),
           ),
@@ -225,39 +262,31 @@ class _AdminUserDataState extends State<AdminUserData> {
   }
 
   Widget buildRiwayatPenukaran() {
-    if (_userToken == null) {
-      return Center(
-        child: Text('Memuat token...'),
-      );
-    }
+    if (_userToken == null) return const Center(child: Text('Memuat token...'));
 
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: fetchRedeemActivities(widget.userData['user_id'].toString()),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return const Center(child: CircularProgressIndicator());
+        if (snapshot.hasError)
           return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('Tidak ada riwayat penukaran'));
-        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty)
+          return const Center(child: Text('Tidak ada riwayat penukaran'));
 
-        final activities = snapshot.data!;
         return Container(
-          padding: EdgeInsets.all(16),
-          margin: EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(top: 10),
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: whiteColor,
-          ),
+              borderRadius: BorderRadius.circular(15), color: whiteColor),
           child: Column(
-            children: activities.map((activity) {
+            children: snapshot.data!.map((activity) {
               return ActvityItem(
                 iconUrl: 'assets/i_activity_exchange.png',
-                title: activity['title'] ?? 'judul tidak tersedia',
-                time: activity['time'] ?? 'waktu tidak tersedia',
-                value: '- ${activity['redeemed_points'] ?? 0} ',
+                title: activity['title'] ?? '-',
+                time: activity['time'] ?? '-',
+                value: '${activity['redeemed_points'] ?? 0}',
               );
             }).toList(),
           ),

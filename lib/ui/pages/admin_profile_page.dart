@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../shared/theme.dart';
 import '../widget/profile_item.dart';
-import '../widget/user_profile_card.dart';
 
 class AdminProfilePage extends StatefulWidget {
   const AdminProfilePage({Key? key}) : super(key: key);
@@ -29,7 +28,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   Future<void> _getAdminData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      _token = prefs.getString('token'); // Ambil token dari SharedPreferences
+      _token = prefs.getString('token');
 
       if (_token == null) {
         setState(() {
@@ -39,12 +38,11 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
         return;
       }
 
-      // Panggil API untuk mendapatkan data admin
       final response = await http.get(
-        Uri.parse('http://192.168.1.8:5000/admin/profile'),
+        Uri.parse('https://bsuapp.space/api/admin/profile'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token', // Sertakan token JWT di header
+          'Authorization': 'Bearer $_token',
         },
       );
 
@@ -69,8 +67,8 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
 
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Hapus semua data
-    Navigator.pushReplacementNamed(context, '/'); // Redirect ke login
+    await prefs.clear();
+    Navigator.pushReplacementNamed(context, '/');
   }
 
   @override
@@ -88,26 +86,60 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
               : ListView(
                   padding: EdgeInsets.symmetric(horizontal: edge),
                   children: [
+                    // Card Info Admin
                     Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(
-                        top: 20,
-                      ),
+                      margin: const EdgeInsets.only(top: 20),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
                         color: whiteColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
                       ),
-                      child: Column(
+                      child: Row(
                         children: [
-                          UserProfileCard(
-                            imgUrl: 'assets/img_profile.png',
-                            name: adminData?['username'] ?? 'Unknown',
-                            email: adminData?['email'] ?? 'Admin',
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundColor: blueColor.withOpacity(0.15),
+                            child: Icon(
+                              Icons.person,
+                              size: 32,
+                              color: blueColor,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                adminData?['username'] ?? 'Unknown',
+                                style: blackTextStyle.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                adminData?['email'] ?? 'admin@example.com',
+                                style: greyTextStyle.copyWith(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
+
                     const SizedBox(height: 25),
+
+                    // Menu Items
                     ProfileItem(
                       title: 'Ubah Bahasa',
                       iconUrl: 'assets/i_language.png',

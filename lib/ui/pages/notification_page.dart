@@ -1,82 +1,159 @@
+import 'dart:convert';
 import 'package:aplikasi_bsu/shared/theme.dart';
-import 'package:aplikasi_bsu/ui/widget/notification.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class NotificationPage extends StatelessWidget {
-  const NotificationPage({super.key});
+class NotificationsPage extends StatefulWidget {
+  @override
+  _NotificationsPageState createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  List<Map<String, dynamic>> notifications = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNotifications();
+  }
+
+  Future<void> fetchNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
+
+      if (token == null) {
+        throw Exception('Token is missing');
+      }
+
+      final response = await http.get(
+        Uri.parse('https://bsuapp.space/api/notifications'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          notifications =
+              List<Map<String, dynamic>>.from(data['notifications']);
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to fetch notifications');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _logout() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('jwt_token');
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: whiteColor,
+      title: Text('Anda telah keluar'),
+      content: Text('Anda berhasil keluar dari aplikasi.'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+          },
+          child: Text(
+            'OK',
+            style: TextStyle(color: blueColor),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+  Future<bool> _onWillPop() async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: whiteColor,
+            title: Text('Konfirmasi Logout'),
+            content: Text('Apakah Anda ingin keluar?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'Tidak',
+                  style: TextStyle(color: redColor),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  _logout();
+                },
+                child: Text(
+                  'Iya',
+                  style: TextStyle(color: blueColor),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lightColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
           'Notifikasi',
+          style: TextStyle(color: whiteColor),
         ),
+        backgroundColor: blueColor,
       ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(
-          horizontal: edge,
-        ),
-        children: [
-          Column(
-            children: [
-              NotificationCard(
-                title: 'GRATIS Cashback',
-                description:
-                    'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
-                time: 'Hari ini',
-                borderColor: blueColor,
-                unseenNotification: lightBlueColor,
-                borderWidth: 1,
-              ),
-              NotificationCard(
-                title: 'GRATIS Cashback',
-                description:
-                    'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
-                time: '05 Mei 2024',
-                borderColor: blueColor,
-                unseenNotification: lightBlueColor,
-                borderWidth: 1,
-              ),
-              NotificationCard(
-                title: 'GRATIS Cashback',
-                description:
-                    'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
-                time: '30 April 2024',
-                borderColor: blueColor,
-                unseenNotification: lightBlueColor,
-                borderWidth: 1,
-              ),
-              NotificationCard(
-                title: 'GRATIS Cashback',
-                description:
-                    'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
-                time: '28 April 2024',
-              ),
-              NotificationCard(
-                title: 'GRATIS Cashback',
-                description:
-                    'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
-                time: '26 April 2024',
-              ),
-              NotificationCard(
-                title: 'GRATIS Cashback',
-                description:
-                    'Ayo kumpulkan sampahmu dan raih voucher cashback hingga 25% berlaku s/d hari ini',
-                time: '24 April 2024',
-              ),
-              NotificationCard(
-                title: 'Selamat Datang!',
-                description:
-                    'Mulai menabung sampah dan tukar poinmu dengan hadiah menarik',
-                time: '21 April 2024',
-              ),
-            ],
-          ),
-          SizedBox(height: 30),
-        ],
-      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              padding: EdgeInsets.all(8.0),
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                return Card(
+                  elevation: 3,
+                  color: whiteColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    leading: Icon(
+                      notification['is_read']
+                          ? Icons.notifications_none
+                          : Icons.notifications_active,
+                      color: notification['is_read'] ? Colors.grey : blueColor,
+                    ),
+                    title: Text(
+                      notification['title'],
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(notification['message']),
+                    trailing: Text(
+                      notification['created_at'],
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
